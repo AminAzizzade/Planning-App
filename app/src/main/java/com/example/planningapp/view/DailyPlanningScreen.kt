@@ -24,6 +24,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -165,7 +166,6 @@ fun DailyPlanningScreen(viewModel: DailyPlanningViewModel, date: String?)
 
                 TaskPopupScreen(viewModel, day, month, year)
 
-
             }
         }
 
@@ -182,54 +182,61 @@ fun TaskPopupScreen(
     var showPopup by remember { mutableStateOf(false) }
     var savedTask by remember { mutableStateOf<Task?>(null) }
 
-    // LaunchedEffect, 'savedTask' değeri değiştiğinde (yeni bir Task geldiğinde) 1 kez tetiklenir.
     LaunchedEffect(savedTask) {
         savedTask?.let { task ->
-            // Veritabanına kaydetme işlemini sadece burada yapıyoruz.
             viewModel.insertedTimeLineTask(
-                day,
-                month,
-                year,
+                day, month, year,
                 task.taskName,
                 TimeConverterService.convert(task.startTime),
                 TimeConverterService.convert(task.endTime)
             )
-            // İkinci kez kaydetme olmaması için istersek 'savedTask' ı tekrar null yapabiliriz:
             savedTask = null
         }
     }
 
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        if (showPopup) {
-            // Görev oluşturma formu
-            taskFormScreen(
-                onSave = { newTask ->
-                    // Kullanıcı Kaydet butonuna basınca bu callback tetiklenir.
-                    // 'savedTask' state'ini değiştirdiğimizde LaunchedEffect devreye girer.
-                    savedTask = newTask
-                    showPopup = false
+    if (showPopup) {
+        AlertDialog(
+            onDismissRequest = { showPopup = false },
+            title = { Text("Yeni Görev Ekle") },
+            // 'text' alanının içinde formu gösterebiliriz
+            text = {
+                taskFormScreen(
+                    onSave = { newTask ->
+                        savedTask = newTask
+                        showPopup = false
+                    }
+                )
+            },
+            confirmButton = {
+                // Form içerisindeki "Kaydet" butonunu kullanmayıp,
+                // AlertDialog'un butonlarını tercih edebilirsiniz.
+                // Dilerseniz formun kendisindeki butonu iptal edip burayı kullanabilirsiniz.
+            },
+            dismissButton = {
+                Button(onClick = { showPopup = false }) {
+                    Text("Vazgeç")
                 }
-            )
-        } else {
-            // Henüz bir görev eklenmediyse veya en son eklenen görev.
+            }
+        )
+    } else {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             Text(
                 text = "Görev eklemek için butona tıklayın",
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold
             )
-
             Spacer(modifier = Modifier.height(16.dp))
-
             Button(onClick = { showPopup = true }) {
                 Text(text = "Görev Ekle")
             }
         }
     }
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
