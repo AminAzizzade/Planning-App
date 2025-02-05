@@ -16,6 +16,12 @@ class DailyTimeLineTasks {
         }
     }
 
+    fun clearAllTimeLine() {
+        timeLineList.clear()
+        timeLineSet.clear()
+    }
+
+
     fun addAllTimeLine(tasks: List<TimeLineTask>) {
         tasks.forEach { task ->
             addTimeLine(task)

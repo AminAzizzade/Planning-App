@@ -70,30 +70,37 @@ val lastDayOfMonths = intArrayOf(31,28,31,30,31,30,31,31,30,31,30,31)
 fun DailyPlanningScreen(viewModel: DailyPlanningViewModel, date: String?)
 {
 
-    var year by remember { mutableIntStateOf(1) }
-    var month by remember { mutableIntStateOf(1) }
-    var day by remember { mutableIntStateOf(1) }
+    var year  = 1
+    var month = 1
+    var calculated_day  = 1
 
     if (date != null) {
         year = DateExtractorService.getYear(date)
         month = DateExtractorService.getMonth(date)
-        day = DateExtractorService.getDay(date)
+        calculated_day = DateExtractorService.getDay(date)
     } else {
         println("Geçersiz tarih formatı!")
     }
 
+    var day by remember{ mutableIntStateOf(calculated_day)}
 
     // Timeline verilerini tutan sınıf
-    val dailyTimeLineTasks = DailyTimeLineTasks()
+    val dailyTimeLineTasks = remember {  DailyTimeLineTasks()}
 
-    // ViewModel'den belirli güne ait verileri çek
-    viewModel.getOneDay(day, month, year)
+    // day, month veya year her değiştiğinde çalışır
+    LaunchedEffect(day, month, year) {
+        viewModel.getOneDay(day, month, year)
+    }
     val timeLine = viewModel.oneDay.observeAsState()
 
     // Timeline verilerini çekerek listeye ekle
     try {
-        timeLine.value?.let {
-            dailyTimeLineTasks.addAllTimeLine(it.dailyTimeLine.timeLineList)
+        timeLine.value?.let { dayData ->
+            // Eklemeden önce içini temizle
+            dailyTimeLineTasks.clearAllTimeLine()
+
+            // Şimdi yeni verileri ekle
+            dailyTimeLineTasks.addAllTimeLine(dayData.dailyTimeLine.timeLineList)
         }
     } catch (e: Exception) {
         Log.e("DailyPlanningScreen", "error: ${e.message}")
@@ -123,7 +130,9 @@ fun DailyPlanningScreen(viewModel: DailyPlanningViewModel, date: String?)
         DaySelector(
             selectedDay = day,
             lastDayOfMonth = lastDayOfMonth,
-            onDaySelected = { newDay -> day = newDay }
+            onDaySelected = {
+                newDay -> day = newDay
+            }
         )
 
         Spacer(modifier = Modifier
