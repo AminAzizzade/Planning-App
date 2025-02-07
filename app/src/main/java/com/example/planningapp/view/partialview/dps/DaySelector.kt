@@ -3,21 +3,24 @@ package com.example.planningapp.view.partialview.dps
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
@@ -27,25 +30,44 @@ fun DaySelector(
     selectedDay: Int,
     onDaySelected: (Int) -> Unit
 ) {
-    val days = remember(selectedDay) {
-        List(5) { index ->
-            val calculatedDay = selectedDay - 2 + index
-            when {
-                calculatedDay > lastDayOfMonth -> 0 // Ayın son gününden sonraki günler için 0
-                else -> calculatedDay
-            }
-        }
+    // Scroll state ile yatay kaydırma kontrolü sağlanır.
+    val scrollState = rememberScrollState()
+    // Ayın tüm günlerini içeren liste (örneğin, 1'den 31'e kadar)
+    val days = List(lastDayOfMonth) { it + 1 }
+
+    // Ekran genişliği ve öğe ölçüleri için density ve configuration bilgilerini alıyoruz.
+    val configuration = LocalConfiguration.current
+    val density = LocalDensity.current
+    // Ekran genişliğini piksele çeviriyoruz.
+    val screenWidthPx = with(density) { configuration.screenWidthDp.dp.toPx() }
+    // Her gün öğesi 50.dp genişliğinde ve aralarında 8.dp boşluk olduğunu varsayıyoruz.
+    val itemWidth = 50.dp
+    val spacing = 8.dp
+    val itemWidthPx = with(density) { itemWidth.toPx() }
+    val spacingPx = with(density) { spacing.toPx() }
+
+    // Seçili gün değiştiğinde, ilgili öğeyi ortalamak için kaydırma animasyonu gerçekleştiriliyor.
+    LaunchedEffect(selectedDay) {
+        // Seçili günün listede indeksi (0'dan başlayan)
+        val index = selectedDay - 1
+        // Öğenin sol kenarından itibaren konumu: her öğe itemWidth + spacing kadar yer kaplıyor.
+        // Öğenin merkezinin konumu: index * (itemWidth + spacing) + itemWidth / 2.
+        // Bu değerden ekranın yarısını çıkartarak öğeyi ortalamayı sağlıyoruz.
+        val targetOffset =
+            (index * (itemWidthPx + spacingPx) + itemWidthPx / 2 - screenWidthPx / 2).toInt().coerceAtLeast(0)
+        scrollState.animateScrollTo(targetOffset)
     }
 
-
-    LazyRow(
+    // Kaydırılabilir satır (Row) oluşturuluyor.
+    Row(
         modifier = Modifier
             .fillMaxWidth()
+            .horizontalScroll(scrollState)
             .background(Color(0xFF4285F4))
             .padding(vertical = 8.dp),
-        horizontalArrangement = Arrangement.SpaceEvenly
+        horizontalArrangement = Arrangement.spacedBy(spacing)
     ) {
-        items(days) { day ->
+        days.forEach { day ->
             DayItem(day, selectedDay, onDaySelected)
         }
     }
@@ -65,19 +87,17 @@ fun DayItem(day: Int, selectedDay: Int, onDaySelected: (Int) -> Unit) {
             .size(50.dp)
             .clip(RoundedCornerShape(8.dp))
             .background(backgroundColor)
-            .clickable { if (day > 0) onDaySelected(day) }
+            .clickable { onDaySelected(day) }
             .border(
                 width = borderWidth,
                 color = borderColor,
                 shape = RoundedCornerShape(8.dp)
             )
     ) {
-        if (day > 0) {
-            Text(
-                text = day.toString(),
-                color = textColor,
-                fontWeight = FontWeight.Bold
-            )
-        }
+        Text(
+            text = day.toString(),
+            color = textColor,
+            fontWeight = FontWeight.Bold
+        )
     }
 }
