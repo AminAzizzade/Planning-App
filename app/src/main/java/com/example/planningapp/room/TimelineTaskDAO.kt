@@ -12,18 +12,21 @@ interface TimeLineTaskDAO
     suspend fun insertTask(task: TimeLineTask)
 
     @Query("SELECT * FROM TimeLineTask")
-    suspend fun uploadAllTimeLimeTasks(): List<TimeLineTask>
+    suspend fun uploadAllTimeLineTasks(): List<TimeLineTask>
 
     @Query("SELECT * FROM TimeLineTask WHERE Day = :day AND Month = :month AND Year = :year")
-    suspend fun uploadTimeLimeTasksByDate(day: Int, month: Int, year: Int): List<TimeLineTask>
+    suspend fun uploadTimeLineTasksByDate(day: Int, month: Int, year: Int): List<TimeLineTask>
 
 
     @Query("SELECT * FROM TimeLineTask WHERE Month = :month AND Year = :year")
-    suspend fun uploadTimeLimeTasksByMonth(month: Int, year: Int): List<TimeLineTask>
+    suspend fun uploadTimeLineTasksByMonth(month: Int, year: Int): List<TimeLineTask>
 
     @Query("DELETE  FROM TimeLineTask WHERE Name = :name")
-    suspend fun deleteTimeLimeTasksByMonth(name: String)
+    suspend fun deleteTimeLineTasksByMonth(name: String)
 
     @Query("DELETE  FROM TimeLineTask WHERE TaskID = :id")
-    suspend fun deleteTimeLimeTasksByID(id: Int)
+    suspend fun deleteTimeLineTasksByID(id: Int)
+
+    @Query("UPDATE TimeLineTask SET Name = :taskName, StartTime = :startTime, EndTime = :endTime WHERE TaskID = :id")
+    suspend fun updateTimeLineTasksByID(id: Int, taskName: String, startTime: Int, endTime: Int)
 }

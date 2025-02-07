@@ -60,4 +60,10 @@ class DailyPlanningViewModel @Inject constructor(private var repository: DailyPl
         }
     }
 
+    fun updateTimeLineTask(id: Int, taskName: String, startTime: Int, endTime: Int,) {
+        viewModelScope.launch {
+            repository.updateTimeLineTaskById(id, taskName, startTime, endTime)
+        }
+    }
+
 }

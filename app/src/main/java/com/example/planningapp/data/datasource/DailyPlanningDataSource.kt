@@ -27,17 +27,23 @@ class DailyPlanningDataSource(private var dao: TimeLineTaskDAO)
 
     suspend fun deleteTimeLineTaskById(id:Int) = withContext(Dispatchers.IO)
     {
-        dao.deleteTimeLimeTasksByID(id)
+        dao.deleteTimeLineTasksByID(id)
+    }
+
+
+    suspend fun updateTimeLineTaskById(id: Int, taskName: String, startTime: Int, endTime: Int) = withContext(Dispatchers.IO)
+    {
+        dao.updateTimeLineTasksByID(id, taskName, startTime, endTime)
     }
 
     suspend fun uploadAllTimeLineTasks(): List<TimeLineTask> = withContext(Dispatchers.IO) {
         //insertDatabase()
-        return@withContext dao.uploadAllTimeLimeTasks()
+        return@withContext dao.uploadAllTimeLineTasks()
     }
 
     suspend fun uploadTimeLineTasksForDay(day: Int, month: Int, year: Int): Day = withContext(Dispatchers.IO)
     {
-        val timeLineTasks = dao.uploadTimeLimeTasksByDate(day, month, year)
+        val timeLineTasks = dao.uploadTimeLineTasksByDate(day, month, year)
         val dailyTimeLineTasks = DailyTimeLineTasks()
         dailyTimeLineTasks.addAllTimeLine(timeLineTasks)
 
@@ -48,7 +54,7 @@ class DailyPlanningDataSource(private var dao: TimeLineTaskDAO)
 
     suspend fun uploadTimeLineTasksForMonth(month: Int, year: Int): HashMap<Int, Day> = withContext(Dispatchers.IO)
     {
-        val timeLineTasks = dao.uploadTimeLimeTasksByMonth(month, year)
+        val timeLineTasks = dao.uploadTimeLineTasksByMonth(month, year)
         val returningMonth = HashMap<Int, Day>()
         for (timeLine: TimeLineTask in timeLineTasks)
         {
@@ -63,6 +69,7 @@ class DailyPlanningDataSource(private var dao: TimeLineTaskDAO)
 
         return@withContext returningMonth
     }
+
 
 
 }

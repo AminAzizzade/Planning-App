@@ -1,20 +1,18 @@
 package com.example.planningapp.view.partialview.dps
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,15 +21,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.planningapp.data.entity.TimeLineTask
+import com.example.planningapp.service.TaskConverterService
 import com.example.planningapp.service.TimeConverterService
 import com.example.planningapp.ui.theme.backgroundColor
 import com.example.planningapp.ui.theme.mainColor
+import com.example.planningapp.view.viewmodel.DailyPlanningViewModel
 
 @Composable
 fun TimelineItem(
+    viewModel: DailyPlanningViewModel,
     event: TimeLineTask,
     previousEvent: TimeLineTask?,
-    onDelete: () -> Unit   // Silme işlemini tetikleyecek lambda parametresi
+    onDelete: () -> Unit, // Silme işlemini tetikleyecek lambda
 ) {
     var previousEndTime = -10
     if (previousEvent != null) previousEndTime = previousEvent.endTime
@@ -45,7 +46,7 @@ fun TimelineItem(
         horizontalAlignment = Alignment.Start,
         modifier = Modifier
     ) {
-        // Eğer önceki görev bitiş saati mevcut görev başlangıç saatiyle aynı değilse,
+        // Eğer önceki görev bitiş zamanı mevcut görev başlangıç zamanı ile aynı değilse,
         // başlangıç zamanı göstergesi oluşturulur.
         if (previousEndTime != startTimeInt) {
             Row {
@@ -73,8 +74,8 @@ fun TimelineItem(
                     .background(mainColor)
             )
 
-            // Görev içeriğini barındıran kutu (card) içerisine hem görev adı
-            // hem de silme butonu (ikon) yerleştirilmiştir.
+            // Görev içeriğini barındıran kutu (card) içerisine, görev adı ve
+            // güncelleme ile silme ikonlarının yer aldığı bölüm eklenmiştir.
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -85,26 +86,46 @@ fun TimelineItem(
                         shape = RoundedCornerShape(12.dp)
                     )
             ) {
-                // Görev adı solda ortalanmış şekilde yer alır.
-                Text(
-                    text = event.taskName,
-                    color = backgroundColor,
-                    fontSize = 16.sp,
-                    modifier = Modifier
-                        .align(Alignment.CenterStart)
-                        .padding(start = 16.dp)
-                )
-                // Silme işlemini tetikleyen ikon buton, sağ üst köşede konumlandırılır.
-                IconButton(
-                    onClick = onDelete,
-                    modifier = Modifier.align(Alignment.CenterEnd)
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxSize()
                 ) {
-                    Icon(
-                        imageVector = Icons.Filled.Delete,
-                        contentDescription = "Sil",
-                        tint = backgroundColor
+                    // Görev adı, kutunun sol tarafında ortalanmış olarak gösterilir.
+                    Text(
+                        text = event.taskName,
+                        color = backgroundColor,
+                        fontSize = 16.sp,
+                        modifier = Modifier
+                            //.align(Alignment.CenterStart)
+                            // Sağ tarafta ikonlar ile çakışmaması için ek padding
+                            .padding(start = 16.dp, end = 48.dp)
                     )
+
+                    // Güncelleme ve silme ikonlarını barındıran satır, kutunun sağ üst köşesinde yer alır.
+                    Row(
+                        modifier = Modifier
+                            .fillMaxSize(0.5F)
+                            .padding(1.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+
+                            //.align(Alignment.BottomEnd)
+                    ) {
+
+                        TaskDeletePopUpScreen(viewModel, event.taskID)
+
+                        TaskUpdatePopupScreen(
+                            initialTask = TaskConverterService.convertToTask(event),
+                            eventID = event.taskID,
+                            onDismiss = {},
+                            viewModel = viewModel
+                        )
+
+                    }
                 }
+
+
             }
         }
         CircularText(text = endTime)
@@ -120,7 +141,7 @@ fun CircularText(text: String) {
             .width(60.dp)
             .background(
                 mainColor,
-                shape = androidx.compose.foundation.shape.CircleShape
+                shape = androidx.compose.foundation.shape.CircleShape // Yuvarlak şekil
             )
     ) {
         Text(
