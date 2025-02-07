@@ -25,24 +25,9 @@ class DailyPlanningDataSource(private var dao: TimeLineTaskDAO)
         dao.insertTask(newTimeLineTask)
     }
 
-    suspend fun testInsertCode() = withContext(Dispatchers.IO)
+    suspend fun deleteTimeLineTaskById(id:Int) = withContext(Dispatchers.IO)
     {
-        val newTimeLineTask = TimeLineTask(
-            taskID = 0, // autoGenerate is true, so you can set it to 0
-            day = 5,
-            month = 2,
-            year = 2025,
-            taskName = "Amin",
-            startTime = 140,
-            endTime = 160
-        )
-
-        dao.insertTask(newTimeLineTask)
-    }
-
-    suspend fun testDeleteCode() = withContext(Dispatchers.IO)
-    {
-        dao.deleteTimeLimeTasksByMonth("Amin")
+        dao.deleteTimeLimeTasksByID(id)
     }
 
     suspend fun uploadAllTimeLineTasks(): List<TimeLineTask> = withContext(Dispatchers.IO) {

@@ -15,10 +15,7 @@ class DailyPlanningRepository(private var dataSource: DailyPlanningDataSource)
     suspend fun insertDatabase(day: Int, month: Int, year: Int, taskName : String, startTime: Int, endTime: Int) =
         dataSource.insertDatabase(day, month, year, taskName, startTime, endTime)
 
-    suspend fun testCodeInsertDatabase() =
-        dataSource.testInsertCode()
-
     suspend fun uploadTimeLineTasksForMonth(month: Int, year: Int): HashMap<Int, Day> = dataSource.uploadTimeLineTasksForMonth(month, year)
 
-    suspend fun testCodeRemoveDatabase() = dataSource.testDeleteCode()
+    suspend fun deleteTimeLineTaskById(id:Int) = dataSource.deleteTimeLineTaskById(id)
 }

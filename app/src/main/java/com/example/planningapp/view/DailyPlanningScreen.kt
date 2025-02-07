@@ -129,6 +129,10 @@ fun DailyPlanningScreen(viewModel: DailyPlanningViewModel, date: String?)
                 itemsIndexed(list) { index, event ->
                     val previousEvent = list.getOrNull(index - 1)
                     TimelineItem(event, previousEvent)
+                    {
+                        Log.e("DailyPlanningScreen",event.taskID.toString())
+                        viewModel.deleteTimeLineTask(event.taskID)
+                    }
                 }
             }
         }

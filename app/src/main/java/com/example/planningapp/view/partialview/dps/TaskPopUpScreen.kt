@@ -46,7 +46,7 @@ fun TaskPopupScreen(
 
     LaunchedEffect(savedTask) {
         savedTask?.let { task ->
-            viewModel.insertedTimeLineTask(
+            viewModel.insertTimeLineTask(
                 day, month, year,
                 task.taskName,
                 TimeConverterService.convert(task.startTime),

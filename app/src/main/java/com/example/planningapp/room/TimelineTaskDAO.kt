@@ -24,5 +24,6 @@ interface TimeLineTaskDAO
     @Query("DELETE  FROM TimeLineTask WHERE Name = :name")
     suspend fun deleteTimeLimeTasksByMonth(name: String)
 
-
+    @Query("DELETE  FROM TimeLineTask WHERE TaskID = :id")
+    suspend fun deleteTimeLimeTasksByID(id: Int)
 }

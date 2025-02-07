@@ -79,9 +79,9 @@ fun DaySelector(
 fun DayItem(day: Int, selectedDay: Int, onDaySelected: (Int) -> Unit) {
     val isSelected = day == selectedDay
     val backgroundColor = if (isSelected) backgroundColor else Color.Transparent
-    val textColor = if (isSelected) Color(0xFF4285F4) else backgroundColor
+    val textColor = if (isSelected) mainColor else backgroundColor
     val borderWidth = if (isSelected) 2.dp else 0.dp
-    val borderColor = if (isSelected) Color(0xFF4285F4) else Color.Transparent
+    val borderColor = if (isSelected) mainColor else Color.Transparent
 
     Box(
         contentAlignment = Alignment.Center,
