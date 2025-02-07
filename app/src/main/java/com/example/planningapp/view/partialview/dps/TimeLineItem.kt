@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.planningapp.data.entity.TimeLineTask
 import com.example.planningapp.service.TimeConverterService
+import com.example.planningapp.ui.theme.backgroundColor
 import com.example.planningapp.ui.theme.mainColor
 
 
@@ -86,7 +87,7 @@ fun TimelineItem(event: TimeLineTask, previousEvent: TimeLineTask?)
             {
                 Text(
                     text = event.taskName ,
-                    color = Color.White,
+                    color = backgroundColor,
                     fontSize = 16.sp
                 )
             }
@@ -112,7 +113,7 @@ fun CircularText(text: String)
     {
         Text(
             text = text,
-            color = Color.White,
+            color = backgroundColor,
             fontSize = 16.sp
         )
 

@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -27,6 +28,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.planningapp.ui.theme.backgroundColor
+import com.example.planningapp.ui.theme.mainColor
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
@@ -42,10 +45,15 @@ fun CalendarScreen(onDayClick: (String) -> Unit) {
     val firstDayOfMonth = currentMonth.atDay(1).dayOfWeek
     val today = LocalDate.now()
 
+    Surface {
+
+    }
+    Spacer(modifier = Modifier.size(20.dp))
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
+            .background(backgroundColor)
     ) {
         // Ay değiştirme butonları ve Ay-Başlık kısmı
         Row(
@@ -57,7 +65,7 @@ fun CalendarScreen(onDayClick: (String) -> Unit) {
         ) {
             // Önceki Ay Butonu
             TextButton(onClick = { currentMonth = currentMonth.minusMonths(1) }) {
-                Text(text = "<", fontSize = 24.sp)
+                Text(text = "<", fontSize = 24.sp, color = mainColor)
             }
             // Ay ve Yıl Başlığı
             Text(
@@ -67,7 +75,7 @@ fun CalendarScreen(onDayClick: (String) -> Unit) {
             )
             // Sonraki Ay Butonu
             TextButton(onClick = { currentMonth = currentMonth.plusMonths(1) }) {
-                Text(text = ">", fontSize = 24.sp)
+                Text(text = ">", fontSize = 24.sp, color = mainColor)
             }
         }
 
@@ -134,8 +142,8 @@ fun DayCell(day: Int?, isToday: Boolean, onClick: () -> Unit) {
             .background(
                 color = when {
                     day == null -> Color.Transparent
-                    isToday -> MaterialTheme.colorScheme.primary
-                    else -> Color.White
+                    isToday -> mainColor
+                    else -> backgroundColor
                 },
                 shape = RoundedCornerShape(8.dp)
             )
@@ -145,7 +153,7 @@ fun DayCell(day: Int?, isToday: Boolean, onClick: () -> Unit) {
         Text(
             text = day?.toString() ?: "",
             fontSize = 16.sp,
-            color = if (isToday) Color.White else Color.Black,
+            color = if (isToday) backgroundColor else Color.Black,
             textAlign = TextAlign.Center
         )
     }

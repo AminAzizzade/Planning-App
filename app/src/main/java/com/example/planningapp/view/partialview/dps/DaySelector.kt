@@ -23,6 +23,8 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.planningapp.ui.theme.backgroundColor
+import com.example.planningapp.ui.theme.mainColor
 
 @Composable
 fun DaySelector(
@@ -63,7 +65,7 @@ fun DaySelector(
         modifier = Modifier
             .fillMaxWidth()
             .horizontalScroll(scrollState)
-            .background(Color(0xFF4285F4))
+            .background(mainColor)
             .padding(vertical = 8.dp),
         horizontalArrangement = Arrangement.spacedBy(spacing)
     ) {
@@ -76,8 +78,8 @@ fun DaySelector(
 @Composable
 fun DayItem(day: Int, selectedDay: Int, onDaySelected: (Int) -> Unit) {
     val isSelected = day == selectedDay
-    val backgroundColor = if (isSelected) Color.White else Color.Transparent
-    val textColor = if (isSelected) Color(0xFF4285F4) else Color.White
+    val backgroundColor = if (isSelected) backgroundColor else Color.Transparent
+    val textColor = if (isSelected) Color(0xFF4285F4) else backgroundColor
     val borderWidth = if (isSelected) 2.dp else 0.dp
     val borderColor = if (isSelected) Color(0xFF4285F4) else Color.Transparent
 

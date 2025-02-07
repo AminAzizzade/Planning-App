@@ -12,3 +12,5 @@ val Pink40 = Color(0xFF7D5260)
 
 
 val mainColor = Color(0xFF4285F4);
+val backgroundColor = Color.White;
+//val mainColor = Color(0xFF375852);
