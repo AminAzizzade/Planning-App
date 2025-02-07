@@ -23,6 +23,6 @@ object TimeConverterService {
     fun convert(timeInMinutes: Int): String {
         val hours = timeInMinutes / 60
         val minutes = timeInMinutes % 60
-        return String.format("%02d:%02d", hours, minutes)
+        return "${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}"
     }
 }

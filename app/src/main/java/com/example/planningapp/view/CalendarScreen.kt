@@ -15,29 +15,28 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import com.example.planningapp.view.viewmodel.DailyPlanningViewModel
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.TextStyle
 import java.util.Locale
 
-
-
-
 @Composable
 fun CalendarScreen(onDayClick: (String) -> Unit) {
-    val currentMonth = YearMonth.now()
+    // currentMonth'ı mutable state olarak tutuyoruz.
+    var currentMonth by remember { mutableStateOf(YearMonth.now()) }
 
     val daysInMonth = currentMonth.lengthOfMonth()
     val firstDayOfMonth = currentMonth.atDay(1).dayOfWeek
@@ -48,19 +47,32 @@ fun CalendarScreen(onDayClick: (String) -> Unit) {
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        // Month and Year Header
-        Text(
-            text = "${currentMonth.month.getDisplayName(TextStyle.FULL, Locale.getDefault())} ${currentMonth.year}",
-            style = MaterialTheme.typography.titleLarge,
-            modifier = Modifier.padding(8.dp),
-            textAlign = TextAlign.Center
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Days of Week Row
-        val daysOfWeek = DayOfWeek.entries.map {
-            it.getDisplayName(TextStyle.SHORT, Locale.getDefault())
+        // Ay değiştirme butonları ve Ay-Başlık kısmı
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Önceki Ay Butonu
+            TextButton(onClick = { currentMonth = currentMonth.minusMonths(1) }) {
+                Text(text = "<", fontSize = 24.sp)
+            }
+            // Ay ve Yıl Başlığı
+            Text(
+                text = "${currentMonth.month.getDisplayName(TextStyle.FULL, Locale.getDefault())} ${currentMonth.year}",
+                style = MaterialTheme.typography.titleLarge,
+                textAlign = TextAlign.Center
+            )
+            // Sonraki Ay Butonu
+            TextButton(onClick = { currentMonth = currentMonth.plusMonths(1) }) {
+                Text(text = ">", fontSize = 24.sp)
+            }
         }
+
+        // Günler Başlığı: Haftanın günlerini gösteren satır
+        val daysOfWeek = DayOfWeek.entries.map { it.getDisplayName(TextStyle.SHORT, Locale.getDefault()) }
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly
@@ -77,9 +89,9 @@ fun CalendarScreen(onDayClick: (String) -> Unit) {
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Days Grid
-        val totalCells = (daysInMonth + firstDayOfMonth.value - 1) // Total slots in grid
-        val rows = (totalCells / 7) + 1 // Calculate number of rows needed
+        // Günlerin Grid Gösterimi
+        val totalCells = daysInMonth + firstDayOfMonth.value - 1
+        val rows = (totalCells / 7) + 1
 
         Column {
             var dayCounter = 1
@@ -95,7 +107,10 @@ fun CalendarScreen(onDayClick: (String) -> Unit) {
 
                         DayCell(
                             day = day,
-                            isToday = today.dayOfMonth == day && today.month == currentMonth.month,
+                            isToday = day != null &&
+                                    today.dayOfMonth == day &&
+                                    today.month == currentMonth.month &&
+                                    today.year == currentMonth.year,
                             onClick = {
                                 day?.let {
                                     val selectedDate = LocalDate.of(currentMonth.year, currentMonth.month, it)
