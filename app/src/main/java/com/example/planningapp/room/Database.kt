@@ -20,4 +20,8 @@ import com.example.planningapp.data.entity.TimeLineTask
 abstract class Database: RoomDatabase()
 {
     abstract fun getTimeLineTaskDAO(): TimeLineTaskDAO
+
+    abstract fun getTaskContentDAO(): TaskContentDAO
+
+    abstract fun getCheckBoxMissionDAO(): CheckBoxMissionDAO
 }
