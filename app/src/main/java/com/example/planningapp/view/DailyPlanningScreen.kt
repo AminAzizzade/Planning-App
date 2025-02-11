@@ -26,7 +26,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.example.planningapp.data.entity.TimeLineTask
 import com.example.planningapp.service.DateExtractorService
+import com.example.planningapp.service.IdentifyEmptyHoursService
+import com.example.planningapp.service.TaskConverterService
 import com.example.planningapp.view.datastructure.DailyTimeLineTasks
 import com.example.planningapp.view.partialview.dps.DaySelector
 import com.example.planningapp.view.partialview.dps.TaskPopupScreen
@@ -89,8 +92,6 @@ fun DailyPlanningScreen(viewModel: DailyPlanningViewModel, date: String?)
     }
 
     val list = dailyTimeLineTasks.timeLineList
-
-
     /**
      * UI düzeni
      */
@@ -112,33 +113,7 @@ fun DailyPlanningScreen(viewModel: DailyPlanningViewModel, date: String?)
             }
         )
 
-        // Görevlerin (timeline) gösterildiği bölüm
-        Surface(
-            modifier = Modifier
-                .fillMaxHeight(0.8f)
-                .background(Color.Black)
-                .padding(16.dp)
-                .size(500.dp)
-        ) {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                verticalArrangement = Arrangement.Top
-            ) {
-                itemsIndexed(list) { index, event ->
-                    val previousEvent = list.getOrNull(index - 1)
-                    TimelineItem(
-                        viewModel,
-                        event, previousEvent,
-                        onDelete = {
-                            viewModel.deleteTimeLineTask(event.taskID)
-                        },
-
-                    )
-                }
-            }
-        }
+        TimeLineView(viewModel, list)
 
         // Ekleme işlemi zamanı açılan popup
         Surface(
@@ -159,6 +134,37 @@ fun DailyPlanningScreen(viewModel: DailyPlanningViewModel, date: String?)
 }
 
 
-
+@Composable
+fun TimeLineView(viewModel: DailyPlanningViewModel, list: List<TimeLineTask>)
+{
+    var emptyHours = List(0){0}
+    if (list.isNotEmpty()) emptyHours = IdentifyEmptyHoursService.identifyEmptyHours(list)
+    // Görevlerin (timeline) gösterildiği bölüm
+    Surface(
+        modifier = Modifier
+            .fillMaxHeight(0.8f)
+            .background(Color.Black)
+            .padding(16.dp)
+            .size(500.dp)
+    ) {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            verticalArrangement = Arrangement.Top
+        ) {
+            itemsIndexed(list) { index, event ->
+                val previousEvent = list.getOrNull(index - 1)
+                TimelineItem(
+                    viewModel,
+                    event, previousEvent,
+                    onDelete = {
+                        viewModel.deleteTimeLineTask(event.taskID)
+                    },
+                    )
+            }
+        }
+    }
+}
 
 

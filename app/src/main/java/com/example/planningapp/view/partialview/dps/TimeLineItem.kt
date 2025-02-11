@@ -34,26 +34,40 @@ fun TimelineItem(
     previousEvent: TimeLineTask?,
     onDelete: () -> Unit, // Silme işlemini tetikleyecek lambda
 ) {
-    var previousEndTime = -10
-    if (previousEvent != null) previousEndTime = previousEvent.endTime
+    // Önceki görev var ise onun bitiş zamanını al, yoksa varsayılan bir değer ata.
+    val previousEndTime = previousEvent?.endTime ?: -10
 
     val startTimeInt = event.startTime
     val endTimeInt = event.endTime
     val startTime = TimeConverterService.convert(startTimeInt)
     val endTime = TimeConverterService.convert(endTimeInt)
 
+    // Görevin süresini hesaplıyoruz.
+    // Burada event.endTime ve event.startTime arasındaki fark, görevin ne kadar sürdüğünü gösteriyor.
+    // Eğer süre 0 ya da negatif çıkarsa, en az 1 zaman birimi kabul ediyoruz.
+    val eventDuration = (event.endTime - event.startTime).coerceAtLeast(1)
+
+    // Ölçek faktörü: Her bir zaman birimi için 80.dp yüksekliğe sahip olacak.
+    val scaleFactor = 0.8
+    // Görev kartının yüksekliğini dinamik olarak hesaplıyoruz.
+    val cardHeight = (eventDuration * scaleFactor).dp
+
+    // Zaman çizgisi (vertical bar) için, kart yüksekliğinden biraz fazla bir yükseklik kullanabiliriz;
+    // orijinal kodda kart 80.dp, çizgi 90.dp idi. Benzer bir oranı burada da uyguluyoruz.
+    val verticalBarHeight = cardHeight + 10.dp
+
     Column(
         horizontalAlignment = Alignment.Start,
         modifier = Modifier
     ) {
-        // Eğer önceki görev bitiş zamanı mevcut görev başlangıç zamanı ile aynı değilse,
-        // başlangıç zamanı göstergesi oluşturulur.
+        // Eğer önceki görev bitiş zamanı, mevcut görev başlangıç zamanına eşit değilse,
+        // başlangıç zamanını temsil eden işaretleri ekliyoruz.
         if (previousEndTime != startTimeInt) {
             Row {
                 Spacer(modifier = Modifier.size(20.dp))
                 Box(
                     modifier = Modifier
-                        .width(15.dp)
+                        .width(4.dp)
                         .height(20.dp)
                         .background(mainColor)
                 )
@@ -67,19 +81,19 @@ fun TimelineItem(
         ) {
             Spacer(modifier = Modifier.size(20.dp))
 
+            // Zaman çizgisi: yüksekliği görevin süresine göre ayarlanıyor.
             Box(
                 modifier = Modifier
-                    .width(15.dp)
-                    .height(90.dp)
+                    .width(5.dp)
+                    .height(verticalBarHeight)
                     .background(mainColor)
             )
 
-            // Görev içeriğini barındıran kutu (card) içerisine, görev adı ve
-            // güncelleme ile silme ikonlarının yer aldığı bölüm eklenmiştir.
+            // Görev içeriğini barındıran kart: yüksekliği, görevin süresine göre dinamik olarak belirleniyor.
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(80.dp)
+                    .height(cardHeight)
                     .padding(start = 18.dp, end = 16.dp)
                     .background(
                         color = Color(0xFFFF9800),
@@ -91,43 +105,35 @@ fun TimelineItem(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    // Görev adı, kutunun sol tarafında ortalanmış olarak gösterilir.
+                    // Görev adı
                     Text(
                         text = event.taskName,
                         color = backgroundColor,
                         fontSize = 16.sp,
                         modifier = Modifier
-                            //.align(Alignment.CenterStart)
-                            // Sağ tarafta ikonlar ile çakışmaması için ek padding
                             .padding(start = 16.dp, end = 48.dp)
                     )
 
-                    // Güncelleme ve silme ikonlarını barındıran satır, kutunun sağ üst köşesinde yer alır.
+                    // Silme ve güncelleme ikonlarını içeren alan
                     Row(
                         modifier = Modifier
                             .fillMaxSize(0.5F)
                             .padding(1.dp),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
-
-                            //.align(Alignment.BottomEnd)
                     ) {
-
                         TaskDeletePopUpScreen(viewModel, event.taskID)
-
                         TaskUpdatePopupScreen(
                             initialTask = TaskConverterService.convertToTask(event),
                             eventID = event.taskID,
                             onDismiss = {},
                             viewModel = viewModel
                         )
-
                     }
                 }
-
-
             }
         }
+        // Bitiş zamanını gösteren dairesel metin
         CircularText(text = endTime)
     }
 }
@@ -137,17 +143,17 @@ fun CircularText(text: String) {
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
-            .height(40.dp)
-            .width(60.dp)
+            .height(25.dp)
+            .width(40.dp)
             .background(
                 mainColor,
-                shape = androidx.compose.foundation.shape.CircleShape // Yuvarlak şekil
+                shape = androidx.compose.foundation.shape.CircleShape
             )
     ) {
         Text(
             text = text,
             color = backgroundColor,
-            fontSize = 16.sp
+            fontSize = 13.sp
         )
     }
 }

@@ -1,8 +1,6 @@
 package com.example.planningapp.view.datastructure
 
-
 import com.example.planningapp.data.entity.TimeLineTask
-
 
 class DailyTimeLineTasks {
 

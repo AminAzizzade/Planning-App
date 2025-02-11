@@ -28,6 +28,8 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    // TODO 1 : */ PopUpScreen' leri aynı yere taşımak gerek, bu sayede live performans elde edilir
+
     @Composable
     fun App(dailyPlanningViewModel: DailyPlanningViewModel)
     {
