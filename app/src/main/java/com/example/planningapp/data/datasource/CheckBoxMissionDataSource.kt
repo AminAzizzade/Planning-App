@@ -1,5 +1,6 @@
 package com.example.planningapp.data.datasource
 
+import android.util.Log
 import com.example.planningapp.data.entity.CheckBoxMission
 import com.example.planningapp.data.entity.TaskContent
 import com.example.planningapp.data.entity.TaskLabel
@@ -9,28 +10,46 @@ import kotlinx.coroutines.withContext
 
 class CheckBoxMissionDataSource(private val dao: CheckBoxMissionDAO)
 {
-    suspend fun testInsert() = withContext(Dispatchers.IO)
-    {
-        val foreignKey = 1
-        val mission = CheckBoxMission(
-            missionId = 0,
-            contentId = foreignKey,
-            check = true,
-            missionName = "test"
-        )
 
-        dao.insertContent(mission)
+    suspend fun getMissions(contentId: Int): List<CheckBoxMission> = withContext(Dispatchers.IO)
+    {
+        Log.e("TaskContentScreen", "istenilen contentId: $contentId")
+        return@withContext dao.getMissions(contentId)
     }
-    suspend fun testRemove() = withContext(Dispatchers.IO)
-    {
-        val foreignKey = 1
-        val mission = CheckBoxMission(
-            missionId = 0,
-            contentId = foreignKey,
-            check = true,
-            missionName = "test"
-        )
 
-        dao.removeContent(foreignKey)
+    suspend fun insertMissions(mission: List<CheckBoxMission>) = withContext(Dispatchers.IO)
+    {
+        dao.insertMissions(mission)
+    }
+
+    suspend fun updateMissions(missions: List<CheckBoxMission>) = withContext(Dispatchers.IO)
+    {
+        for (mission in missions)
+        {
+            dao.updateMission(mission.missionId, mission.missionName, mission.check)
+        }
+    }
+
+    suspend fun removeMissions(missions: List<CheckBoxMission>) = withContext(Dispatchers.IO)
+    {
+        for (mission in missions)
+        {
+            dao.removeMissions(mission.missionId)
+        }
+    }
+
+    suspend fun insertMission(mission: CheckBoxMission) = withContext(Dispatchers.IO)
+    {
+        dao.insertMission(mission)
+    }
+
+    suspend fun updateMission(mission: CheckBoxMission) = withContext(Dispatchers.IO)
+    {
+        dao.updateMission(mission.missionId, mission.missionName, mission.check)
+    }
+
+    suspend fun deleteMission(mission: CheckBoxMission) = withContext(Dispatchers.IO)
+    {
+        dao.deleteMission(mission.missionId)
     }
 }
