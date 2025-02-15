@@ -5,18 +5,18 @@ import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -31,6 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.planningapp.service.TimeConverterService
+import com.example.planningapp.ui.theme.mainColor
 import com.example.planningapp.view.Task
 import com.example.planningapp.view.viewmodel.DailyPlanningViewModel
 
@@ -79,27 +80,29 @@ fun TaskPopupScreen(
                 }
             }
         )
-    } else {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = "Görev eklemek için butona tıklayın",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold
+    }
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxSize(0.5F)
+            .padding(16.dp),
+    ){
+        IconButton(
+            onClick = { showPopup = true }
+        )
+        {
+            Icon(
+                modifier = Modifier.size(60.dp),
+                imageVector = Icons.Default.AddCircle,
+                contentDescription = "Add Task",
+                tint = mainColor
             )
-            Spacer(modifier = Modifier.height(16.dp))
-            Button(onClick = { showPopup = true }) {
-                Text(text = "Görev Ekle")
-            }
         }
+
     }
 }
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun taskFormScreen(
     onSave: (Task) -> Unit // Kaydedilen görevi dışarıya döndüren callback
@@ -136,7 +139,7 @@ fun taskFormScreen(
 
     Column(
         modifier = Modifier
-            .fillMaxSize()
+            //.fillMaxSize()
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -192,7 +195,6 @@ fun taskFormScreen(
         Button(
             onClick = {
                 if (taskName.isNotBlank()) {
-//                    Log.e("MyActivity", "Task: name ${taskName} \n endTime ${endTime} \n startTime ${startTime}")
                     task = Task(taskName, startTime, endTime) // Task nesnesini oluştur
                     Log.d("TaskForm", "Task Oluşturuldu: $task") // Logda göster
                     onSave(task!!) // Onaylanan task nesnesini döndür
@@ -204,6 +206,5 @@ fun taskFormScreen(
         }
     }
 
-    //Log.e("MyActivity", "Task: name ${task?.taskName} \n endTime ${task?.endTime} \n startTime ${task?.startTime}")
     return task // Task nesnesini döndür
 }
