@@ -12,18 +12,25 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.planningapp.ui.theme.PlanningAppTheme
 import com.example.planningapp.view.DailyPlanningScreen
+import com.example.planningapp.view.TaskContentScreen
+import com.example.planningapp.view.viewmodel.ContentOfTaskViewModel
 import com.example.planningapp.view.viewmodel.DailyPlanningViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private val dailyPlanningViewModel: DailyPlanningViewModel by viewModels ()
+    private val contentOfTaskViewModel: ContentOfTaskViewModel by viewModels ()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             PlanningAppTheme {
-                App(dailyPlanningViewModel)
+                App(
+                    dailyPlanningViewModel,
+                    contentOfTaskViewModel
+                )
             }
         }
     }
@@ -31,7 +38,10 @@ class MainActivity : ComponentActivity() {
     // TODO 1 : */ PopUpScreen' leri aynı yere taşımak gerek, bu sayede live performans elde edilir
 
     @Composable
-    fun App(dailyPlanningViewModel: DailyPlanningViewModel)
+    fun App(
+        dailyPlanningViewModel: DailyPlanningViewModel,
+        contentOfTaskViewModel: ContentOfTaskViewModel
+    )
     {
         val navController = rememberNavController()
         NavHost(navController = navController, startDestination = "calendar") {
@@ -42,7 +52,19 @@ class MainActivity : ComponentActivity() {
             }
             composable("details/{date}") { backStackEntry ->
                 val date = backStackEntry.arguments?.getString("date")
-                DailyPlanningScreen(viewModel = dailyPlanningViewModel, date = date)
+                DailyPlanningScreen(
+                    viewModel = dailyPlanningViewModel,
+                    date = date,
+                    onTaskClick = { taskId ->
+                        navController.navigate("content/${taskId}")
+                    }
+                )
+            }
+            composable("content/{taskId}") {
+                val taskId = it.arguments?.getString("taskId")?.toInt()
+                if (taskId != null) {
+                    TaskContentScreen(viewModel = contentOfTaskViewModel, taskId = taskId)
+                }
             }
         }
     }

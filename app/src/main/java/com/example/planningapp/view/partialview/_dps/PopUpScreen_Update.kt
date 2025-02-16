@@ -1,4 +1,4 @@
-package com.example.planningapp.view.partialview.dps
+package com.example.planningapp.view.partialview._dps
 
 import android.app.TimePickerDialog
 import androidx.compose.foundation.clickable
@@ -31,7 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.planningapp.service.TimeConverterService
-import com.example.planningapp.ui.theme.backgroundColor
+import com.example.planningapp.ui.theme.timeTextColor
 import com.example.planningapp.view.Task
 import com.example.planningapp.view.viewmodel.DailyPlanningViewModel
 
@@ -106,7 +106,7 @@ fun TaskUpdatePopupScreen(
             Icon(
                 imageVector = Icons.Filled.Edit,
                 contentDescription = "Sil",
-                tint = backgroundColor
+                tint = timeTextColor
             )
         }
     }

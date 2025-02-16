@@ -1,4 +1,4 @@
-package com.example.planningapp.view.partialview.dps
+package com.example.planningapp.view.partialview._dps
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -66,8 +66,12 @@ fun DaySelector(
             .fillMaxWidth()
             .horizontalScroll(scrollState)
             .background(mainColor)
-            .padding(vertical = 8.dp),
-        horizontalArrangement = Arrangement.spacedBy(spacing)
+            .padding(vertical = 8.dp)
+        ,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement
+            //.SpaceEvenly
+            .spacedBy(spacing)
     ) {
         days.forEach { day ->
             DayItem(day, selectedDay, onDaySelected)
@@ -79,7 +83,7 @@ fun DaySelector(
 fun DayItem(day: Int, selectedDay: Int, onDaySelected: (Int) -> Unit) {
     val isSelected = day == selectedDay
     val backgroundColor = if (isSelected) backgroundColor else Color.Transparent
-    val textColor = if (isSelected) mainColor else backgroundColor
+    val textColor = if (isSelected) mainColor else Color.White
     val borderWidth = if (isSelected) 2.dp else 0.dp
     val borderColor = if (isSelected) mainColor else Color.Transparent
 

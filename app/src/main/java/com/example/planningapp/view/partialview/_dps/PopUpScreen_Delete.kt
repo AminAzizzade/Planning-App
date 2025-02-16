@@ -1,4 +1,4 @@
-package com.example.planningapp.view.partialview.dps
+package com.example.planningapp.view.partialview._dps
 
 
 import androidx.compose.foundation.layout.size
@@ -17,8 +17,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.DialogProperties
-import com.example.planningapp.ui.theme.backgroundColor
+import com.example.planningapp.ui.theme.timeTextColor
 import com.example.planningapp.view.viewmodel.DailyPlanningViewModel
 
 /**
@@ -77,36 +76,9 @@ fun TaskDeletePopUpScreen(
             Icon(
                 imageVector = Icons.Filled.Delete,
                 contentDescription = "Sil",
-                tint = backgroundColor
+                tint = timeTextColor
             )
         }
     }
 }
 
-
-@Composable
-fun DeleteConfirmationDialog(
-    onConfirm: () -> Unit,
-    onDismiss: () -> Unit
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss, // Dialog dışına tıklanırsa veya geri tuşuna basılırsa onDismiss çağrılır.
-        title = { Text("Silme Onayı") },
-        text = { Text("Bu görevi silmek istediğinize emin misiniz?") },
-        confirmButton = {
-            Button(
-                onClick = onConfirm
-            ) {
-                Text("Evet")
-            }
-        },
-        dismissButton = {
-            Button(
-                onClick = onDismiss
-            ) {
-                Text("Hayır")
-            }
-        },
-        properties = DialogProperties(dismissOnClickOutside = false) // Dışarıya tıklanırsa kapatılmasını engellemek için.
-    )
-}

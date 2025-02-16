@@ -1,0 +1,190 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 2,
+    "identityHash": "e556dcf785993d432a548d666410302b",
+    "entities": [
+      {
+        "tableName": "TimeLineTask",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`TaskID` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `Day` INTEGER NOT NULL, `Month` INTEGER NOT NULL, `Year` INTEGER NOT NULL, `Name` TEXT NOT NULL, `StartTime` INTEGER NOT NULL, `EndTime` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "taskID",
+            "columnName": "TaskID",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "day",
+            "columnName": "Day",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "month",
+            "columnName": "Month",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "year",
+            "columnName": "Year",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "taskName",
+            "columnName": "Name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "startTime",
+            "columnName": "StartTime",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "endTime",
+            "columnName": "EndTime",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "TaskID"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "TaskContent",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`ContentID` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `TaskID` INTEGER NOT NULL, `Note` TEXT NOT NULL, `Label` TEXT NOT NULL, FOREIGN KEY(`TaskID`) REFERENCES `TimeLineTask`(`TaskID`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "contentId",
+            "columnName": "ContentID",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "taskId",
+            "columnName": "TaskID",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "missionNote",
+            "columnName": "Note",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "label",
+            "columnName": "Label",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "ContentID"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_TaskContent_TaskID",
+            "unique": false,
+            "columnNames": [
+              "TaskID"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_TaskContent_TaskID` ON `${TABLE_NAME}` (`TaskID`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "TimeLineTask",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "TaskID"
+            ],
+            "referencedColumns": [
+              "TaskID"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "CheckBoxMission",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`MissionID` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `ContentID` INTEGER NOT NULL, `Check` INTEGER NOT NULL, `MissionName` TEXT NOT NULL, FOREIGN KEY(`ContentID`) REFERENCES `TaskContent`(`ContentID`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "missionId",
+            "columnName": "MissionID",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "contentId",
+            "columnName": "ContentID",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "check",
+            "columnName": "Check",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "missionName",
+            "columnName": "MissionName",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "MissionID"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_CheckBoxMission_ContentID",
+            "unique": false,
+            "columnNames": [
+              "ContentID"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_CheckBoxMission_ContentID` ON `${TABLE_NAME}` (`ContentID`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "TaskContent",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "ContentID"
+            ],
+            "referencedColumns": [
+              "ContentID"
+            ]
+          }
+        ]
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'e556dcf785993d432a548d666410302b')"
+    ]
+  }
+}
