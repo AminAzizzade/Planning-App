@@ -22,6 +22,12 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    kapt {
+        arguments {
+            arg("room.schemaLocation", "$projectDir/schemas")
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -61,6 +67,9 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
+    implementation ("androidx.compose.material3:material3:1.0.1")
+
+
     implementation("androidx.navigation:navigation-compose:2.7.6")
     implementation ("com.google.code.gson:gson:2.10")
 
@@ -80,5 +89,8 @@ dependencies {
     kapt("androidx.room:room-compiler:2.6.1")
     implementation ("androidx.room:room-ktx:2.6.1")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
+
+
+    implementation("androidx.compose.ui:ui-text-google-fonts:1.7.7")
 
 }
