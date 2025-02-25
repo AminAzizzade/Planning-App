@@ -21,4 +21,7 @@ interface TaskContentDAO {
     @Query("DELETE FROM TaskContent WHERE ContentID = :contentId")
     suspend fun removeContent(contentId: Int)
 
+    @Query("SELECT * FROM TaskContent")
+    suspend fun getAllContents() : List<TaskContent>
+
 }

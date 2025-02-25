@@ -19,11 +19,32 @@ class ContentOfTaskViewModel @Inject constructor(
 ) : ViewModel()
 {
 
+    val allTasks = MutableLiveData<HashMap<Int, TaskContent>>()
+    val allMissions = MutableLiveData<HashMap<Int, List<CheckBoxMission>>>()
+
     val missions = MutableLiveData<List<CheckBoxMission>>(emptyList())
     val content = MutableLiveData<TaskContent>(null)
     val contentLabel = MutableLiveData(ContentMode.INSERT)
     val missionLabel = MutableLiveData(ContentMode.INSERT)
 
+    init{
+        getAllTasks()
+        getAllMissions()
+    }
+
+    private fun getAllTasks()
+    {
+        viewModelScope.launch {
+            allTasks.value = repositoryCoT.getAllContents()
+        }
+    }
+
+    private fun getAllMissions()
+    {
+        viewModelScope.launch {
+            allMissions.value = repositoryCBM.getAllMissions()
+        }
+    }
 
     fun abstractionForView(taskId: Int)
     {

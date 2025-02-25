@@ -52,4 +52,12 @@ class CheckBoxMissionDataSource(private val dao: CheckBoxMissionDAO)
     {
         dao.deleteMission(mission.missionId)
     }
+
+    suspend fun getAllMissions(): HashMap<Int, List<CheckBoxMission>> = withContext(Dispatchers.IO)
+    {
+        val list = dao.getAllMissions()
+        val map = list.groupBy { it.contentId } as HashMap<Int, List<CheckBoxMission>>
+
+        return@withContext map
+    }
 }

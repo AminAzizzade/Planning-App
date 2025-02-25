@@ -1,6 +1,5 @@
 package com.example.planningapp.view
 
-
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -64,7 +63,6 @@ fun DailyPlanningScreen(
     date: String?,
     onTaskClick: (Int) -> Unit)
 {
-
     /**
      * Date verisinin dönüştürülmesi
      */
@@ -92,22 +90,43 @@ fun DailyPlanningScreen(
     }
     val timeLine = viewModel.oneDay.observeAsState()
 
-    // -- Timeline verilerini çekerek listeye ekle
+    /**
+     * Fetch monthly data
+     */
+
+    LaunchedEffect(month) {
+        viewModel.getMonthDays(month, year)
+    }
+    val monthDays = viewModel.monthDays.observeAsState()
+
+    val dayOfYear = day + 100*month + 10000*year
+
     try {
-        timeLine.value?.let { dayData ->
+        monthDays.value!![dayOfYear]?.let { dayOfMonthData ->
+            Log.e("DailyPlanningScreen1", "dayOfMonthData: $dayOfMonthData")
             dailyTimeLineTasks.clearAllTimeLine()
-            dailyTimeLineTasks.addAllTimeLine(dayData.dailyTimeLine.timeLineList)
+            dailyTimeLineTasks.addAllTimeLine(dayOfMonthData.dailyTimeLine.timeLineList)
         }
-    } catch (e: Exception) {
-        Log.e("DailyPlanningScreen", "error: ${e.message}")
-    } finally {
-        Log.e("DailyPlanningScreen", "TimeLine count: ${dailyTimeLineTasks.timeLineList.size}")
+    }
+    catch (e: Exception)
+    {
+        Log.e("DailyPlanningScreen1", "error: ${e.message}")
+    }
+    finally {
+        Log.e("DailyPlanningScreen1", "TimeLine count: ${dailyTimeLineTasks.timeLineList.size}")
+    }
+
+    for (task in dailyTimeLineTasks.timeLineList)
+    {
+        Log.e("DailyPlanningScreen1", "task: $task")
     }
 
     val list = dailyTimeLineTasks.timeLineList
+
     /**
      * UI düzeni
      */
+    
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -123,7 +142,6 @@ fun DailyPlanningScreen(
 
         TimeLineView(viewModel, list, onTaskClick)
 
-        // Ekleme işlemi zamanı açılan popup
         TaskPopupScreen(viewModel, day, month, year)
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -138,7 +156,6 @@ fun DailyPlanningScreen(
         )
 
         Spacer(modifier = Modifier.height(16.dp))
-
     }
 }
 

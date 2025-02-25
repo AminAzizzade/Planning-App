@@ -1,6 +1,5 @@
 package com.example.planningapp.view.viewmodel
 
-
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -25,6 +24,7 @@ class DailyPlanningViewModel @Inject constructor(private var repository: DailyPl
 
     fun getOneDay(day: Int, month: Int, year: Int)
     {
+        getMonthDays(month, year)
         viewModelScope.launch {
             oneDay.value = repository.uploadTimeLineTasksForDay(day, month, year)
         }

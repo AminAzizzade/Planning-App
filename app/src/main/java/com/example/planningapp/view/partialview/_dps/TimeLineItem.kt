@@ -49,7 +49,7 @@ fun TimelineItem(
 
         Box(
             modifier = Modifier
-                .width(4.dp)
+                .width(6.dp)
                 .height(40.dp)
                 .background(mainColor)
         )

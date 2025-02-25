@@ -38,7 +38,16 @@ class ContentOfTaskDataSource(private val dao: TaskContentDAO)
         dao.removeContent(taskContent.contentId)
     }
 
-
+    suspend fun getAllContents(): HashMap<Int, TaskContent> = withContext(Dispatchers.IO)
+    {
+        val list = dao.getAllContents()
+        val map = HashMap<Int, TaskContent>()
+        for (content in list)
+        {
+            map[content.taskId] = content
+        }
+        return@withContext map
+    }
 
 
 }

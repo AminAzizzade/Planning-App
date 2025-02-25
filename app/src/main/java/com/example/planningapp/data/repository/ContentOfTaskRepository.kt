@@ -15,4 +15,7 @@ class ContentOfTaskRepository (private val dataSource: ContentOfTaskDataSource)
     suspend fun updateContent(taskContent: TaskContent)
     = dataSource.updateContent(taskContent)
 
+    suspend fun getAllContents(): HashMap<Int, TaskContent>
+    = dataSource.getAllContents()
+
 }
