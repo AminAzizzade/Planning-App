@@ -1,7 +1,5 @@
 package com.example.planningapp.view
 
-
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -25,6 +23,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
@@ -64,7 +63,6 @@ fun DailyPlanningScreen(
     date: String?,
     onTaskClick: (Int) -> Unit)
 {
-
     /**
      * Date verisinin dönüştürülmesi
      */
@@ -86,28 +84,28 @@ fun DailyPlanningScreen(
     var day by remember{ mutableIntStateOf(calculatedDay)}
     val dailyTimeLineTasks = remember {  DailyTimeLineTasks()}
 
-    // -- day, month veya year her değiştiğinde çalışır
-    LaunchedEffect(day, month, year) {
-        viewModel.getOneDay(day, month, year)
-    }
-    val timeLine = viewModel.oneDay.observeAsState()
 
-    // -- Timeline verilerini çekerek listeye ekle
-    try {
-        timeLine.value?.let { dayData ->
-            dailyTimeLineTasks.clearAllTimeLine()
-            dailyTimeLineTasks.addAllTimeLine(dayData.dailyTimeLine.timeLineList)
-        }
-    } catch (e: Exception) {
-        Log.e("DailyPlanningScreen", "error: ${e.message}")
-    } finally {
-        Log.e("DailyPlanningScreen", "TimeLine count: ${dailyTimeLineTasks.timeLineList.size}")
-    }
-
-    val list = dailyTimeLineTasks.timeLineList
     /**
+     * Fetch monthly data
+     */
+
+    LaunchedEffect(month) {
+        viewModel.getMonthDays(month, year)
+    }
+    val monthDays = viewModel.monthDays.observeAsState()
+
+
+    val timelineTasks by remember(day, month, year, monthDays.value) {
+        derivedStateOf {
+            val dayOfYear = (day) + 100 * month + 10000 * year
+            monthDays.value?.get(dayOfYear)?.dailyTimeLine?.timeLineList ?: emptyList()
+        }
+    }
+
+   /**
      * UI düzeni
      */
+    
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -121,9 +119,8 @@ fun DailyPlanningScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        TimeLineView(viewModel, list, onTaskClick)
+        TimeLineView(viewModel, timelineTasks, onTaskClick)
 
-        // Ekleme işlemi zamanı açılan popup
         TaskPopupScreen(viewModel, day, month, year)
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -138,7 +135,6 @@ fun DailyPlanningScreen(
         )
 
         Spacer(modifier = Modifier.height(16.dp))
-
     }
 }
 

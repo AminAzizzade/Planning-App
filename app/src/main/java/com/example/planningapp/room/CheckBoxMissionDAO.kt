@@ -11,6 +11,9 @@ interface CheckBoxMissionDAO {
     @Query("SELECT * FROM CheckBoxMission WHERE ContentID = :contentId")
     suspend fun getMissions(contentId: Int): List<CheckBoxMission>
 
+    @Query("SELECT * FROM CheckBoxMission")
+    suspend fun getAllMissions(): List<CheckBoxMission>
+
     @Insert
     suspend fun insertMissions(missions: List<CheckBoxMission>)
 

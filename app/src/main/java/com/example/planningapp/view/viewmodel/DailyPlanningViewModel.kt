@@ -1,6 +1,5 @@
 package com.example.planningapp.view.viewmodel
 
-
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,6 +7,8 @@ import com.example.planningapp.data.entity.Day
 import com.example.planningapp.data.entity.TimeLineTask
 import com.example.planningapp.data.repository.DailyPlanningRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -25,14 +26,15 @@ class DailyPlanningViewModel @Inject constructor(private var repository: DailyPl
 
     fun getOneDay(day: Int, month: Int, year: Int)
     {
-        viewModelScope.launch {
+        getMonthDays(month, year)
+        CoroutineScope(Dispatchers.Main).launch {
             oneDay.value = repository.uploadTimeLineTasksForDay(day, month, year)
         }
     }
 
     fun getMonthDays(month: Int, year: Int)
     {
-        viewModelScope.launch {
+        CoroutineScope(Dispatchers.Main).launch {
             monthDays.value = repository.uploadTimeLineTasksForMonth(month, year)
         }
     }
@@ -47,7 +49,7 @@ class DailyPlanningViewModel @Inject constructor(private var repository: DailyPl
 
     fun insertTimeLineTask(day: Int, month: Int, year: Int, taskName : String, startTime: Int, endTime: Int)
     {
-        viewModelScope.launch {
+        CoroutineScope(Dispatchers.Main).launch {
             repository.insertDatabase(day, month, year, taskName, startTime, endTime)
         }
 
@@ -55,13 +57,13 @@ class DailyPlanningViewModel @Inject constructor(private var repository: DailyPl
 
 
     fun deleteTimeLineTask(id:Int) {
-        viewModelScope.launch {
+        CoroutineScope(Dispatchers.Main).launch {
             repository.deleteTimeLineTaskById(id)
         }
     }
 
     fun updateTimeLineTask(id: Int, taskName: String, startTime: Int, endTime: Int,) {
-        viewModelScope.launch {
+        CoroutineScope(Dispatchers.Main).launch {
             repository.updateTimeLineTaskById(id, taskName, startTime, endTime)
         }
     }

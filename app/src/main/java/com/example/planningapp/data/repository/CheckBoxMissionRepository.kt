@@ -24,4 +24,6 @@ class CheckBoxMissionRepository(private val dataSource: CheckBoxMissionDataSourc
     suspend fun deleteMission(mission: CheckBoxMission)
     = dataSource.deleteMission(mission)
 
+    suspend fun getAllMissions()
+    = dataSource.getAllMissions()
 }

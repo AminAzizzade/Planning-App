@@ -7,8 +7,9 @@ import com.example.planningapp.data.entity.CheckBoxMission
 import com.example.planningapp.data.entity.TaskContent
 import com.example.planningapp.data.repository.CheckBoxMissionRepository
 import com.example.planningapp.data.repository.ContentOfTaskRepository
-import com.example.planningapp.view.ContentMode
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -19,40 +20,50 @@ class ContentOfTaskViewModel @Inject constructor(
 ) : ViewModel()
 {
 
-    val missions = MutableLiveData<List<CheckBoxMission>>(emptyList())
-    val content = MutableLiveData<TaskContent>(null)
-    val contentLabel = MutableLiveData(ContentMode.INSERT)
-    val missionLabel = MutableLiveData(ContentMode.INSERT)
+    val allTasks = MutableLiveData<HashMap<Int, TaskContent>>()
+    val allMissions = MutableLiveData<HashMap<Int, List<CheckBoxMission>>>()
 
+    init{
+        getAllTasks()
+        getAllMissions()
+    }
 
-    fun abstractionForView(taskId: Int)
+    fun resetViewModel()
     {
-        getTaskContents(taskId)
+        getAllTasks()
+        getAllMissions()
+    }
 
-        if (content.value != null)
-        {
-            getMissions(content.value!!.contentId)
-            contentLabel.value = ContentMode.UPDATE
-            if (missions.value!!.isNotEmpty()) missionLabel.value = ContentMode.UPDATE
+    private fun getAllTasks()
+    {
+        CoroutineScope(Dispatchers.Main).launch {
+            allTasks.value = repositoryCoT.getAllContents()
+        }
+    }
+
+    private fun getAllMissions()
+    {
+        CoroutineScope(Dispatchers.Main).launch {
+            allMissions.value = repositoryCBM.getAllMissions()
         }
     }
 
     fun insertTaskContent(taskContent: TaskContent)
     {
-        viewModelScope.launch {
+        CoroutineScope(Dispatchers.Main).launch {
             repositoryCoT.insertContent(taskContent)
         }
     }
 
     fun insertMission(mission: CheckBoxMission)
     {
-        viewModelScope.launch {
+        CoroutineScope(Dispatchers.Main).launch {
             repositoryCBM.insertMission(mission)
         }
     }
 
     fun deleteMission(mission: CheckBoxMission) {
-        viewModelScope.launch {
+        CoroutineScope(Dispatchers.Main).launch {
             repositoryCBM.deleteMission(mission)
         }
     }
@@ -64,23 +75,10 @@ class ContentOfTaskViewModel @Inject constructor(
         }
     }
 
-    fun updateMissions(missionList: List<CheckBoxMission>)
+    fun updateOneMission(mission: CheckBoxMission)
     {
-
-        viewModelScope.launch {
-            repositoryCBM.updateMissions(missionList)
-        }
-    }
-
-    private fun getTaskContents(taskId: Int) {
-        viewModelScope.launch {
-            content.value = repositoryCoT.getContents(taskId)
-        }
-    }
-
-    private fun getMissions(contentId: Int) {
-        viewModelScope.launch {
-            missions.value = repositoryCBM.getMissions(contentId)
+        CoroutineScope(Dispatchers.Main).launch {
+            repositoryCBM.updateMission(mission)
         }
     }
 }
