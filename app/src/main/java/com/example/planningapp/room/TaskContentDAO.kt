@@ -15,8 +15,8 @@ interface TaskContentDAO {
     @Insert
     suspend fun insertContent(content: TaskContent)
 
-    @Query("UPDATE TaskContent SET Note = :missionNote, Label = :label WHERE ContentID = :contentId")
-    suspend fun updateContent(contentId: Int, label: String, missionNote: String)
+    @Update
+    suspend fun updateContent1(content: TaskContent)
 
     @Query("DELETE FROM TaskContent WHERE ContentID = :contentId")
     suspend fun removeContent(contentId: Int)
