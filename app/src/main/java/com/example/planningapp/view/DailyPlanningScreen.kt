@@ -1,6 +1,5 @@
 package com.example.planningapp.view
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -24,6 +23,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
@@ -84,11 +84,6 @@ fun DailyPlanningScreen(
     var day by remember{ mutableIntStateOf(calculatedDay)}
     val dailyTimeLineTasks = remember {  DailyTimeLineTasks()}
 
-    // -- day, month veya year her değiştiğinde çalışır
-    LaunchedEffect(day, month, year) {
-        viewModel.getOneDay(day, month, year)
-    }
-    val timeLine = viewModel.oneDay.observeAsState()
 
     /**
      * Fetch monthly data
@@ -99,31 +94,15 @@ fun DailyPlanningScreen(
     }
     val monthDays = viewModel.monthDays.observeAsState()
 
-    val dayOfYear = day + 100*month + 10000*year
 
-    try {
-        monthDays.value!![dayOfYear]?.let { dayOfMonthData ->
-            Log.e("DailyPlanningScreen1", "dayOfMonthData: $dayOfMonthData")
-            dailyTimeLineTasks.clearAllTimeLine()
-            dailyTimeLineTasks.addAllTimeLine(dayOfMonthData.dailyTimeLine.timeLineList)
+    val timelineTasks by remember(day, month, year, monthDays.value) {
+        derivedStateOf {
+            val dayOfYear = (day) + 100 * month + 10000 * year
+            monthDays.value?.get(dayOfYear)?.dailyTimeLine?.timeLineList ?: emptyList()
         }
     }
-    catch (e: Exception)
-    {
-        Log.e("DailyPlanningScreen1", "error: ${e.message}")
-    }
-    finally {
-        Log.e("DailyPlanningScreen1", "TimeLine count: ${dailyTimeLineTasks.timeLineList.size}")
-    }
 
-    for (task in dailyTimeLineTasks.timeLineList)
-    {
-        Log.e("DailyPlanningScreen1", "task: $task")
-    }
-
-    val list = dailyTimeLineTasks.timeLineList
-
-    /**
+   /**
      * UI düzeni
      */
     
@@ -140,7 +119,7 @@ fun DailyPlanningScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        TimeLineView(viewModel, list, onTaskClick)
+        TimeLineView(viewModel, timelineTasks, onTaskClick)
 
         TaskPopupScreen(viewModel, day, month, year)
 

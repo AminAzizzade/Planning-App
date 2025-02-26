@@ -23,6 +23,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxColors
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -37,6 +38,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -56,11 +58,6 @@ import com.example.planningapp.ui.theme.textColor
 import com.example.planningapp.view.partialview.general.ContainerTextView
 import com.example.planningapp.view.viewmodel.ContentOfTaskViewModel
 
-enum class ContentMode {
-    INSERT,
-    UPDATE
-}
-
 
 /**
  * TaskContentScreen: Ana ekran
@@ -69,41 +66,38 @@ enum class ContentMode {
 @Composable
 fun TaskContentScreen(viewModel: ContentOfTaskViewModel, taskId: Int) {
     // Verileri gözlemle
-    val allContents = viewModel.allTasks.observeAsState(mapOf())
-    val allMissions = viewModel.allMissions.observeAsState(mapOf())
+    val allContents by viewModel.allTasks.observeAsState(mapOf())
+    val contentState = allContents[taskId]
 
-    val contentState = remember {
-        mutableStateOf(allContents.value?.get(taskId))
-    }
-    val missionsState = remember {
-        mutableStateOf(allMissions.value?.get(contentState.value?.contentId ?: 0))
-    }
-
-    val scope = rememberCoroutineScope()
-
-    if (contentState.value == null )
-    {
-        EmptyDataView(
-            onAddClick = {
-                val content = TaskContent(
-                    taskId = taskId,
-                    contentId = 0,
-                    missionNote = "",
-                    label = TaskLabel.HOME
-                )
-                viewModel.insertTaskContent(content)
-                viewModel.resetViewModel()
-            }
-        )
+    if (contentState == null) {
+        EmptyDataView(onAddClick = {
+            val newContent = TaskContent(
+                taskId = taskId,
+                contentId = 0,
+                missionNote = "",
+                label = TaskLabel.HOME
+            )
+            viewModel.insertTaskContent(newContent)
+            viewModel.resetViewModel()
+        })
         return
     }
 
-    val labelState = remember {
-        mutableStateOf(contentState.value!!.label!!)
+    var note by remember { mutableStateOf(contentState.missionNote ?: "") }
+    var labelState by remember { mutableStateOf(contentState.label ?: TaskLabel.HOME) }
+
+    // Missions için ekleme ve anlık güncellemeler
+    val allMissions by viewModel.allMissions.observeAsState(mapOf())
+    val missionsFromDb = allMissions[contentState.contentId] ?: emptyList()
+
+    val missionsState = remember { mutableStateListOf<CheckBoxMission>() }
+
+    LaunchedEffect(missionsFromDb) {
+        missionsState.clear()
+        missionsState.addAll(missionsFromDb)
     }
-    var note by remember {
-        mutableStateOf(contentState.value!!.missionNote!!)
-    }
+
+    val scope = rememberCoroutineScope()
 
 
     // Mission işlemleri için state'ler
@@ -134,6 +128,7 @@ fun TaskContentScreen(viewModel: ContentOfTaskViewModel, taskId: Int) {
     LaunchedEffect(insertedMission) {
         insertedMission?.let { mission ->
             viewModel.insertMission(mission)
+            insertedMission = null
         }
         viewModel.resetViewModel()
     }
@@ -142,6 +137,7 @@ fun TaskContentScreen(viewModel: ContentOfTaskViewModel, taskId: Int) {
     LaunchedEffect(removedMission) {
         removedMission?.let { mission ->
             viewModel.deleteMission(mission)
+            removedMission = null
         }
         viewModel.resetViewModel()
     }
@@ -198,7 +194,7 @@ fun TaskContentScreen(viewModel: ContentOfTaskViewModel, taskId: Int) {
             ) {
                 OutlinedTextField(
                     readOnly = true,
-                    value = labelState.value.name,
+                    value = labelState.name,
                     onValueChange = {},
                     label = { Text("Label") },
                     trailingIcon = {
@@ -222,7 +218,7 @@ fun TaskContentScreen(viewModel: ContentOfTaskViewModel, taskId: Int) {
                         DropdownMenuItem(
                             text = { Text(text = option.name) },
                             onClick = {
-                                labelState.value = option
+                                labelState = option
                                 expanded = false
                             }
                         )
@@ -269,12 +265,17 @@ fun TaskContentScreen(viewModel: ContentOfTaskViewModel, taskId: Int) {
                     IconButton(
                         onClick = {
                             if (missionName.isNotBlank()) {
-                                    insertedMission = CheckBoxMission(
-                                        missionId = 0,
-                                        contentId = contentState.value?.contentId ?: 0,
-                                        missionName = missionName,
-                                        check = false
-                                    )
+                                // Yeni mission oluştur
+                                val newMission = CheckBoxMission(
+                                    missionId = 0,
+                                    contentId = contentState.contentId,
+                                    missionName = missionName,
+                                    check = false
+                                )
+                                // Lokal listeye ekle
+                                missionsState.add(newMission)
+                                // ViewModel'e ekleme isteğini gönder
+                                insertedMission = newMission
                                 missionName = ""
                             }
                         }
@@ -286,6 +287,7 @@ fun TaskContentScreen(viewModel: ContentOfTaskViewModel, taskId: Int) {
                             tint = mainColor
                         )
                     }
+
                 }
             }
 
@@ -302,57 +304,41 @@ fun TaskContentScreen(viewModel: ContentOfTaskViewModel, taskId: Int) {
                     .height(500.dp)
                     .padding(8.dp)
             ) {
+                // LazyColumn içerisinde missionsState kullanın
                 LazyColumn {
-                    itemsIndexed(missionsState.value ?: emptyList()) { index, mission ->
+                    itemsIndexed(missionsState) { index, mission ->
                         var missionChecked by remember { mutableStateOf(mission.check) }
-                        Log.d("TaskContentScreen", "Mission check: ${mission.check}")
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceBetween,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 8.dp, vertical = 4.dp)
-                                .shadow(elevation = 4.dp, shape = shape1)
-                                .clip(shape1)
+                                .shadow(elevation = 4.dp, shape = RoundedCornerShape(12.dp))
+                                .clip(RoundedCornerShape(12.dp))
                                 .background(containerColor)
                                 .padding(horizontal = 16.dp, vertical = 8.dp)
                         ) {
                             Checkbox(
-                                colors = CheckboxColors(
-                                    checkedCheckmarkColor = mainColor,
-                                    uncheckedCheckmarkColor = mainColor,
-                                    checkedBorderColor = mainColor,
-                                    uncheckedBorderColor = mainColor,
-                                    checkedBoxColor = Color.Transparent,
-                                    uncheckedBoxColor = Color.Transparent,
-                                    disabledCheckedBoxColor = Color.White,
-                                    disabledUncheckedBoxColor = mainColor,
-                                    disabledIndeterminateBoxColor = mainColor,
-                                    disabledBorderColor = mainColor,
-                                    disabledIndeterminateBorderColor = mainColor,
-                                    disabledUncheckedBorderColor = mainColor
-                                ),
                                 checked = missionChecked,
                                 onCheckedChange = { newValue ->
-//                                    missionChecked = newValue
-//                                    updatedMissions = updatedMissions.toMutableList().also {
-//                                        it[index] = it[index].copy(check = newValue)
-//                                    }
-                                    updatedMission = mission.copy(check = newValue)
+                                    // UI üzerindeki checkbox değişikliğini mutable listeye yansıtın
                                     missionChecked = newValue
-                                    Log.d("TaskContentScreen", "Mission check güncellendi: $missionChecked")
-                                    missionsState.value = missionsState.value!!.toMutableList().also {
-                                        it[index] = it[index].copy(check = newValue)
-                                    }
+                                    missionsState[index] = mission.copy(check = newValue)
 
-                                }
+                                    // ViewModel'e güncelleme isteği gönderin
+                                    updatedMission = mission.copy(check = newValue)
+                                },
+                                colors = CheckboxDefaults.colors(
+                                    mainColor
+                                )
                             )
-
                             ContainerTextView(mission.missionName)
-
                             IconButton(
                                 onClick = {
+                                    // UI'den silme işlemi yaparken mutable listeyi güncelleyin
                                     removedMission = mission
+                                    missionsState.removeAt(index)
                                 }
                             ) {
                                 Icon(
@@ -378,12 +364,12 @@ fun TaskContentScreen(viewModel: ContentOfTaskViewModel, taskId: Int) {
                 colors = ButtonDefaults.buttonColors(mainColor),
                 onClick = {
                     Log.d("TaskContentScreen", "Save butonuna tıklandı")
-                    Log.d("TaskContentScreen", "${contentState.value?.contentId ?: 0}")
+                    Log.d("TaskContentScreen", "${contentState?.contentId ?: 0}")
                     updated = TaskContent(
                         taskId = taskId,
-                        contentId = contentState.value?.contentId ?: 0,
+                        contentId = contentState?.contentId ?: 0,
                         missionNote = note,
-                        label = labelState.value
+                        label = labelState
                     )
                 }
             ) {

@@ -7,7 +7,6 @@ import com.example.planningapp.data.entity.TimeLineTask
 class DailyPlanningRepository(private var dataSource: DailyPlanningDataSource)
 {
 
-
     suspend fun uploadAllTimeLineTasks(): List<TimeLineTask> = dataSource.uploadAllTimeLineTasks()
 
     suspend fun uploadTimeLineTasksForDay(day: Int, month: Int, year: Int): Day = dataSource.uploadTimeLineTasksForDay(day, month, year)

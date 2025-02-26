@@ -11,6 +11,30 @@ import kotlinx.coroutines.withContext
 class DailyPlanningDataSource(private var dao: TimeLineTaskDAO)
 {
 
+    suspend fun uploadTimeLineTasksForMonth2(month: Int, year: Int): HashMap<Int, Day> = withContext(Dispatchers.IO) {
+        // Veritabanından gelen timeline görevlerini çek
+        val timeLineTasks = dao.uploadTimeLineTasksByMonth(month, year)
+
+        // Görevleri gün bazında grupla
+        val groupedTasks: Map<Int, List<TimeLineTask>> = timeLineTasks.groupBy { it.day }
+        val returningMonth = hashMapOf<Int, Day>()
+
+        groupedTasks.forEach { (day, tasksForDay) ->
+            // Her gün için DailyTimeLineTasks oluştur ve o güne ait görevleri ekle
+            val dailyTimeLineTasks = DailyTimeLineTasks().apply { addAllTimeLine(tasksForDay) }
+
+            // Yardımcı fonksiyon veya mapping işlemiyle Day nesnesi oluştur
+            val mapDay = Day(day, month, year, dailyTimeLineTasks)
+
+            // Unique key oluşturmak için extension veya yardımcı fonksiyon kullan
+            returningMonth[convertDateInteger(day, month, year)] = mapDay
+            Log.d("DailyPlanningScreen1", "Created mapDay: $mapDay")
+        }
+
+        returningMonth
+    }
+
+
     suspend fun insertDatabase(day: Int, month: Int, year: Int, taskName : String, startTime: Int, endTime: Int) = withContext(Dispatchers.IO)
     {
         val newTimeLineTask = TimeLineTask(
@@ -53,58 +77,7 @@ class DailyPlanningDataSource(private var dao: TimeLineTaskDAO)
         return@withContext returningDay
     }
 
-    suspend fun uploadTimeLineTasksForMonth(month: Int, year: Int): HashMap<Int, Day> = withContext(Dispatchers.IO)
-    {
-        Log.e("DailyPlanningDataSource", "starting fetch monthly data")
-
-        val timeLineTasks = dao.uploadTimeLineTasksByMonth(month, year)
-        val returningMonth = HashMap<Int, Day>()
-        for (timeLine: TimeLineTask in timeLineTasks)
-        {
-            val dailyTimeLineTasks = DailyTimeLineTasks()
-            dailyTimeLineTasks.addAllTimeLine(timeLineTasks)
-            for (task in dailyTimeLineTasks.timeLineList)
-                Log.e("DailyPlanningDataSource", "task: $task")
-
-            val mapDay = Day(timeLine.day, timeLine.month, timeLine.year, dailyTimeLineTasks)
-            returningMonth[
-                convertDateInteger(timeLine.day, timeLine.month, timeLine.year)
-            ] = mapDay
-            Log.e("DailyPlanningDataSource", "mapDay: $mapDay")
-        }
-
-        return@withContext returningMonth
-    }
-
-    suspend fun uploadTimeLineTasksForMonth2(month: Int, year: Int): HashMap<Int, Day> = withContext(Dispatchers.IO) {
-        Log.d("DailyPlanningDataSource", "Starting monthly data fetch")
-
-        // Veritabanından gelen timeline görevlerini çek
-        val timeLineTasks = dao.uploadTimeLineTasksByMonth(month, year)
-
-        // Görevleri gün bazında grupla
-        val groupedTasks: Map<Int, List<TimeLineTask>> = timeLineTasks.groupBy { it.day }
-        val returningMonth = hashMapOf<Int, Day>()
-
-        groupedTasks.forEach { (day, tasksForDay) ->
-            // Her gün için DailyTimeLineTasks oluştur ve o güne ait görevleri ekle
-            val dailyTimeLineTasks = DailyTimeLineTasks().apply { addAllTimeLine(tasksForDay) }
-
-            // Yardımcı fonksiyon veya mapping işlemiyle Day nesnesi oluştur
-            val mapDay = Day(day, month, year, dailyTimeLineTasks)
-
-            // Unique key oluşturmak için extension veya yardımcı fonksiyon kullan
-            returningMonth[convertDateInteger(day, month, year)] = mapDay
-            Log.d("DailyPlanningScreen1", "Created mapDay: $mapDay")
-        }
-
-        returningMonth
-    }
-
     // Yardımcı fonksiyon: Tarihi tekil bir Int değere çevirir
     fun convertDateInteger(day: Int, month: Int, year: Int): Int = year * 10000 + month * 100 + day
-
-
-
 
 }

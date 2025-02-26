@@ -7,7 +7,6 @@ import com.example.planningapp.data.entity.CheckBoxMission
 import com.example.planningapp.data.entity.TaskContent
 import com.example.planningapp.data.repository.CheckBoxMissionRepository
 import com.example.planningapp.data.repository.ContentOfTaskRepository
-import com.example.planningapp.view.ContentMode
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
