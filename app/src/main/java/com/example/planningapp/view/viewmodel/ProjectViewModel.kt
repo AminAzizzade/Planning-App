@@ -10,11 +10,13 @@ import com.example.planningapp.data.repository.project.ProjectHistoryRepository
 import com.example.planningapp.data.repository.project.ProjectRepository
 import com.example.planningapp.data.repository.project.ProjectTaskRepository
 import com.example.planningapp.data.repository.project.ProjectTaskResourceRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@HiltViewModel
 class ProjectViewModel @Inject constructor(
     private val projectRepository: ProjectRepository,
     private val projectHistoryRepository: ProjectHistoryRepository,

@@ -9,12 +9,14 @@ import com.example.planningapp.data.datasource.DailyPlanningDataSource
 import com.example.planningapp.data.datasource.project.ProjectDataSource
 import com.example.planningapp.data.datasource.project.ProjectHistoryDataSource
 import com.example.planningapp.data.datasource.project.ProjectTaskDataSource
+import com.example.planningapp.data.datasource.project.ProjectTaskResourceDataSource
 import com.example.planningapp.data.repository.CheckBoxMissionRepository
 import com.example.planningapp.data.repository.ContentOfTaskRepository
 import com.example.planningapp.data.repository.DailyPlanningRepository
 import com.example.planningapp.data.repository.project.ProjectHistoryRepository
 import com.example.planningapp.data.repository.project.ProjectRepository
 import com.example.planningapp.data.repository.project.ProjectTaskRepository
+import com.example.planningapp.data.repository.project.ProjectTaskResourceRepository
 import com.example.planningapp.room.CheckBoxMissionDAO
 import com.example.planningapp.room.Database
 import com.example.planningapp.room.TaskContentDAO
@@ -122,6 +124,17 @@ class AppModule
     }
 
 
+    @Provides
+    @Singleton
+    fun provideProjectTaskResourceRepository(dataSource: ProjectTaskResourceDataSource): ProjectTaskResourceRepository {
+        return ProjectTaskResourceRepository(dataSource)
+    }
+
+    @Provides
+    @Singleton
+    fun provideProjectTaskResourceDataSource(projectTaskResourceDAO: ProjectTaskResourceDAO): ProjectTaskResourceDataSource {
+        return ProjectTaskResourceDataSource(projectTaskResourceDAO)
+    }
 
 
     @Provides

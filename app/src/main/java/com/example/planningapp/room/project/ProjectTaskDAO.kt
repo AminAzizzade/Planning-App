@@ -1,9 +1,11 @@
 package com.example.planningapp.room.project
 
+import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import com.example.planningapp.data.entity.project.ProjectTask
 
+@Dao
 interface ProjectTaskDAO
 {
     @Query("SELECT * FROM ProjectTask")

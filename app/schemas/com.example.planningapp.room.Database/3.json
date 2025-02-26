@@ -1,0 +1,390 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 3,
+    "identityHash": "db38b3a2c9cfe822cd8de470c6277f53",
+    "entities": [
+      {
+        "tableName": "TimeLineTask",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`TaskID` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `Day` INTEGER NOT NULL, `Month` INTEGER NOT NULL, `Year` INTEGER NOT NULL, `Name` TEXT NOT NULL, `StartTime` INTEGER NOT NULL, `EndTime` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "taskID",
+            "columnName": "TaskID",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "day",
+            "columnName": "Day",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "month",
+            "columnName": "Month",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "year",
+            "columnName": "Year",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "taskName",
+            "columnName": "Name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "startTime",
+            "columnName": "StartTime",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "endTime",
+            "columnName": "EndTime",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "TaskID"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "TaskContent",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`ContentID` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `TaskID` INTEGER NOT NULL, `Note` TEXT NOT NULL, `Label` TEXT NOT NULL, FOREIGN KEY(`TaskID`) REFERENCES `TimeLineTask`(`TaskID`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "contentId",
+            "columnName": "ContentID",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "taskId",
+            "columnName": "TaskID",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "missionNote",
+            "columnName": "Note",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "label",
+            "columnName": "Label",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "ContentID"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_TaskContent_TaskID",
+            "unique": false,
+            "columnNames": [
+              "TaskID"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_TaskContent_TaskID` ON `${TABLE_NAME}` (`TaskID`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "TimeLineTask",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "TaskID"
+            ],
+            "referencedColumns": [
+              "TaskID"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "CheckBoxMission",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`MissionID` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `ContentID` INTEGER NOT NULL, `Check` INTEGER NOT NULL, `MissionName` TEXT NOT NULL, FOREIGN KEY(`ContentID`) REFERENCES `TaskContent`(`ContentID`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "missionId",
+            "columnName": "MissionID",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "contentId",
+            "columnName": "ContentID",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "check",
+            "columnName": "Check",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "missionName",
+            "columnName": "MissionName",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "MissionID"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_CheckBoxMission_ContentID",
+            "unique": false,
+            "columnNames": [
+              "ContentID"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_CheckBoxMission_ContentID` ON `${TABLE_NAME}` (`ContentID`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "TaskContent",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "ContentID"
+            ],
+            "referencedColumns": [
+              "ContentID"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "Project",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`ProjectID` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `ProjectName` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "projectId",
+            "columnName": "ProjectID",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "projectName",
+            "columnName": "ProjectName",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "ProjectID"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "ProjectTask",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`ProjectTaskID` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `ProjectID` INTEGER NOT NULL, `TaskName` TEXT NOT NULL, FOREIGN KEY(`ProjectID`) REFERENCES `Project`(`ProjectID`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "projectTaskId",
+            "columnName": "ProjectTaskID",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "projectId",
+            "columnName": "ProjectID",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "taskName",
+            "columnName": "TaskName",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "ProjectTaskID"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_ProjectTask_ProjectID",
+            "unique": false,
+            "columnNames": [
+              "ProjectID"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_ProjectTask_ProjectID` ON `${TABLE_NAME}` (`ProjectID`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "Project",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "ProjectID"
+            ],
+            "referencedColumns": [
+              "ProjectID"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "ProjectHistory",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`ProjectHistoryID` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `ProjectID` INTEGER NOT NULL, `ProjectHistoryName` TEXT NOT NULL, `HistoryLabel` TEXT NOT NULL, FOREIGN KEY(`ProjectID`) REFERENCES `Project`(`ProjectID`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "projectHistoryId",
+            "columnName": "ProjectHistoryID",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "projectId",
+            "columnName": "ProjectID",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "projectHistoryName",
+            "columnName": "ProjectHistoryName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "historyLabel",
+            "columnName": "HistoryLabel",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "ProjectHistoryID"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_ProjectHistory_ProjectID",
+            "unique": false,
+            "columnNames": [
+              "ProjectID"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_ProjectHistory_ProjectID` ON `${TABLE_NAME}` (`ProjectID`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "Project",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "ProjectID"
+            ],
+            "referencedColumns": [
+              "ProjectID"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "ProjectTaskResource",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`ProjectTaskResourceID` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `ProjectTaskID` INTEGER NOT NULL, `ResourceName` TEXT NOT NULL, `ResourceCheck` INTEGER NOT NULL, FOREIGN KEY(`ProjectTaskID`) REFERENCES `ProjectTask`(`ProjectTaskID`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "projectTaskResourceId",
+            "columnName": "ProjectTaskResourceID",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "projectTaskId",
+            "columnName": "ProjectTaskID",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "resourceName",
+            "columnName": "ResourceName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "resourceCheck",
+            "columnName": "ResourceCheck",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "ProjectTaskResourceID"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_ProjectTaskResource_ProjectTaskID",
+            "unique": false,
+            "columnNames": [
+              "ProjectTaskID"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_ProjectTaskResource_ProjectTaskID` ON `${TABLE_NAME}` (`ProjectTaskID`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "ProjectTask",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "ProjectTaskID"
+            ],
+            "referencedColumns": [
+              "ProjectTaskID"
+            ]
+          }
+        ]
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'db38b3a2c9cfe822cd8de470c6277f53')"
+    ]
+  }
+}

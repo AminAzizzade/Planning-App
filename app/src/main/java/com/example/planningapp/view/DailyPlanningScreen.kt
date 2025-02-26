@@ -82,7 +82,6 @@ fun DailyPlanningScreen(
      * Verilerin kullanılacak değerlere aktarılması
      */
     var day by remember{ mutableIntStateOf(calculatedDay)}
-    val dailyTimeLineTasks = remember {  DailyTimeLineTasks()}
 
 
     /**
@@ -178,7 +177,8 @@ fun IconListLazyRow() {
         val imageVector: ImageVector,
         val contentDescription: String,
         val defaultColor: Color,
-        val selectedColor: Color
+        val selectedColor: Color,
+        val destination: String
     )
 
     // İkonları içeren liste
@@ -187,19 +187,22 @@ fun IconListLazyRow() {
             imageVector = Icons.Default.CheckCircle,
             contentDescription = "Check Circle",
             defaultColor = textColor,
-            selectedColor = textColor
+            selectedColor = textColor,
+            destination = "project"
         ),
         IconItem(
             imageVector = Icons.Default.DateRange,
             contentDescription = "Date Range",
             defaultColor = mainColor,
-            selectedColor = mainColor
+            selectedColor = mainColor,
+            destination = "calendar"
         ),
         IconItem(
             imageVector = Icons.Default.Build,
             contentDescription = "Build",
             defaultColor = textColor,
-            selectedColor = textColor
+            selectedColor = textColor,
+            destination = "calendar"
         )
     )
 

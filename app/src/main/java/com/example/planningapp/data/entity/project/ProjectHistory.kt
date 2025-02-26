@@ -12,13 +12,13 @@ import org.jetbrains.annotations.NotNull
     tableName = "ProjectHistory",
     foreignKeys = [
         ForeignKey(
-            entity = TaskContent::class,
-            parentColumns = ["ContentID"],  // Column in the parent entity
-            childColumns = ["ContentID"],     // Column in this entity
+            entity = Project::class,
+            parentColumns = ["ProjectID"],  // Column in the parent entity
+            childColumns = ["ProjectID"],     // Column in this entity
             onDelete = ForeignKey.CASCADE  // Optionally cascade deletes
         )
     ],
-    indices = [Index("ContentID")] // Improves query performance on foreign key field
+    indices = [Index("ProjectID")] // Improves query performance on foreign key field
 )
 data class ProjectHistory(
     @PrimaryKey(autoGenerate = true)
