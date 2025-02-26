@@ -8,6 +8,10 @@ import com.example.planningapp.data.entity.CheckBoxMission
 import com.example.planningapp.data.entity.Converters
 import com.example.planningapp.data.entity.TaskContent
 import com.example.planningapp.data.entity.TimeLineTask
+import com.example.planningapp.room.project.ProjectDAO
+import com.example.planningapp.room.project.ProjectHistoryDAO
+import com.example.planningapp.room.project.ProjectTaskDAO
+import com.example.planningapp.room.project.ProjectTaskResourceDAO
 
 @Database(entities = [TimeLineTask::class, TaskContent::class, CheckBoxMission::class],
     version = 2,
@@ -24,4 +28,13 @@ abstract class Database: RoomDatabase()
     abstract fun getTaskContentDAO(): TaskContentDAO
 
     abstract fun getCheckBoxMissionDAO(): CheckBoxMissionDAO
+
+    abstract fun getProjectDAO(): ProjectDAO
+
+    abstract fun getProjectHistoryDAO(): ProjectHistoryDAO
+
+    abstract fun getProjectTaskDAO(): ProjectTaskDAO
+
+    abstract fun getProjectTaskResourceDAO(): ProjectTaskResourceDAO
+
 }
