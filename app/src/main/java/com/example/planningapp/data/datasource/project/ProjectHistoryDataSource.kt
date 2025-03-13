@@ -14,6 +14,10 @@ class ProjectHistoryDataSource(private val projectHistoryDAO: ProjectHistoryDAO)
         return@withContext map
     }
 
+    suspend fun getProjectHistory(projectId: Int): List<ProjectHistory> = withContext(Dispatchers.IO) {
+        return@withContext projectHistoryDAO.getProjectHistory(projectId)
+    }
+
     suspend fun insertProjectHistory(projectHistory: ProjectHistory) = withContext(Dispatchers.IO) {
         projectHistoryDAO.insertProjectHistory(projectHistory)
     }

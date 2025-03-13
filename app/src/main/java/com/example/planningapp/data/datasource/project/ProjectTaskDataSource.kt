@@ -14,6 +14,10 @@ class ProjectTaskDataSource (private val projectTaskDAO: ProjectTaskDAO)
         return@withContext map
     }
 
+    suspend fun getProjectTasks(projectId: Int): List<ProjectTask> = withContext(Dispatchers.IO) {
+        return@withContext projectTaskDAO.getProjectTasks(projectId)
+    }
+
     suspend fun insertProjectTask(projectTask: ProjectTask) = withContext(Dispatchers.IO) {
         projectTaskDAO.insertProjectTask(projectTask)
     }

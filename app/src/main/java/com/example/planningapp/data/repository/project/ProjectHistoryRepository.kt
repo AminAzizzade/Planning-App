@@ -7,8 +7,8 @@ class ProjectHistoryRepository(
     private val projectHistoryDataSource: ProjectHistoryDataSource
 )
 {
-    suspend fun getAllProjectHistory(): HashMap<Int, List<ProjectHistory>> =
-        projectHistoryDataSource.getAllProjectHistory()
+    suspend fun getProjectHistory(projectId: Int): List<ProjectHistory> =
+        projectHistoryDataSource.getProjectHistory(projectId)
 
     suspend fun insertProjectHistory(projectHistory: ProjectHistory) =
         projectHistoryDataSource.insertProjectHistory(projectHistory)
