@@ -11,6 +11,9 @@ interface ProjectHistoryDAO
     @Query("SELECT * FROM ProjectHistory")
     suspend fun getAllProjectHistory(): List<ProjectHistory>
 
+    @Query("SELECT * FROM ProjectHistory WHERE ProjectID = :projectId")
+    suspend fun getProjectHistory(projectId: Int): List<ProjectHistory>
+
     @Insert
     suspend fun insertProjectHistory(projectHistory: ProjectHistory)
 

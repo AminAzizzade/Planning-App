@@ -11,6 +11,9 @@ interface ProjectTaskDAO
     @Query("SELECT * FROM ProjectTask")
     suspend fun getAllProjectTasks(): List<ProjectTask>
 
+    @Query("SELECT * FROM ProjectTask WHERE ProjectID = :projectId")
+    suspend fun getProjectTasks(projectId: Int): List<ProjectTask>
+
     @Insert
     suspend fun insertProjectTask(projectTask: ProjectTask)
 
