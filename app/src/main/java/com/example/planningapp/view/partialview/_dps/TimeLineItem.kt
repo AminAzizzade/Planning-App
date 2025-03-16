@@ -55,7 +55,6 @@ fun TimelineItem(
         )
 
         val shape = RoundedCornerShape(24.dp)
-        // Görev Kartı
         Box(
             modifier = Modifier
                 .fillMaxWidth()

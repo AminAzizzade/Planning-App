@@ -22,7 +22,6 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CheckboxColors
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -49,6 +48,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import com.example.planningapp.data.entity.CheckBoxMission
 import com.example.planningapp.data.entity.TaskContent
 import com.example.planningapp.data.entity.TaskLabel
@@ -64,7 +64,11 @@ import com.example.planningapp.view.viewmodel.ContentOfTaskViewModel
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TaskContentScreen(viewModel: ContentOfTaskViewModel, taskId: Int) {
+fun TaskContentScreen(
+    viewModel: ContentOfTaskViewModel,
+    taskId: Int,
+    navController: NavHostController
+) {
     // Verileri gözlemle
     val allContents by viewModel.allTasks.observeAsState(mapOf())
     val contentState = allContents[taskId]
