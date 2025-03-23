@@ -9,12 +9,6 @@ class CheckBoxMissionRepository(private val dataSource: CheckBoxMissionDataSourc
     suspend fun getMissions(contentId: Int): List<CheckBoxMission>
     = dataSource.getMissions(contentId)
 
-    suspend fun insertMissions(mission: List<CheckBoxMission>)
-    = dataSource.insertMissions(mission)
-
-    suspend fun updateMissions(missions: List<CheckBoxMission>)
-    = dataSource.updateMissions(missions)
-
     suspend fun insertMission(mission: CheckBoxMission)
     = dataSource.insertMission(mission)
 
@@ -26,4 +20,11 @@ class CheckBoxMissionRepository(private val dataSource: CheckBoxMissionDataSourc
 
     suspend fun getAllMissions()
     = dataSource.getAllMissions()
+
+    suspend fun checkMission(missionId: Int)
+    = dataSource.checkMission(missionId)
+
+    suspend fun uncheckMission(missionId: Int)
+    = dataSource.uncheckMission(missionId)
+
 }

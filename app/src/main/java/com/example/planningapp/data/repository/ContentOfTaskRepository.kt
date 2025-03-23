@@ -15,4 +15,7 @@ class ContentOfTaskRepository (private val dataSource: ContentOfTaskDataSource)
     suspend fun getAllContents(): HashMap<Int, TaskContent>
     = dataSource.getAllContents()
 
+    suspend fun getTask(taskId: Int): TaskContent
+    = dataSource.getTask(taskId)
+
 }
