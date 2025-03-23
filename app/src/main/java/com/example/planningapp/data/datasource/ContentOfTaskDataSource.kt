@@ -21,6 +21,11 @@ class ContentOfTaskDataSource(private val dao: TaskContentDAO)
         return@withContext map
     }
 
+    suspend fun getTask(taskId: Int): TaskContent = withContext(Dispatchers.IO)
+    {
+        return@withContext dao.getTask(taskId)
+    }
+
     suspend fun insertContent(taskContent: TaskContent) = withContext(Dispatchers.IO)
     {
         dao.insertContent(taskContent)
