@@ -12,9 +12,6 @@ class CheckBoxMissionRepository(private val dataSource: CheckBoxMissionDataSourc
     suspend fun insertMission(mission: CheckBoxMission)
     = dataSource.insertMission(mission)
 
-    suspend fun updateMission(mission: CheckBoxMission)
-            = dataSource.updateMission(mission)
-
     suspend fun deleteMission(mission: CheckBoxMission)
     = dataSource.deleteMission(mission)
 

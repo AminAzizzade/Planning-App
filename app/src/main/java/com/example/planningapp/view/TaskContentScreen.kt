@@ -75,6 +75,8 @@ fun TaskContentScreen(
     //val contentState = viewModel.task.value
     //val missions by viewModel.missions.observeAsState(emptyList())
 
+    Log.d("TaskContentScreen", "contentState: $contentState")
+
     if (contentState == null) {
         EmptyDataView(onAddClick = {
             val newContent = TaskContent(
