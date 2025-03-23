@@ -37,10 +37,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -69,9 +69,11 @@ fun TaskContentScreen(
     taskId: Int,
     navController: NavHostController
 ) {
-    // Verileri gözlemle
     val allContents by viewModel.allTasks.observeAsState(mapOf())
     val contentState = allContents[taskId]
+
+    //val contentState = viewModel.task.value
+    //val missions by viewModel.missions.observeAsState(emptyList())
 
     if (contentState == null) {
         EmptyDataView(onAddClick = {
@@ -87,28 +89,29 @@ fun TaskContentScreen(
         return
     }
 
-    var note by remember { mutableStateOf(contentState.missionNote ?: "") }
-    var labelState by remember { mutableStateOf(contentState.label ?: TaskLabel.HOME) }
+    var note by remember { mutableStateOf(contentState.missionNote) }
+    var labelState by remember { mutableStateOf(contentState.label) }
 
     // Missions için ekleme ve anlık güncellemeler
     val allMissions by viewModel.allMissions.observeAsState(mapOf())
     val missionsFromDb = allMissions[contentState.contentId] ?: emptyList()
 
-    val missionsState = remember { mutableStateListOf<CheckBoxMission>() }
+    val missions = remember { mutableStateListOf<CheckBoxMission>() }
 
     LaunchedEffect(missionsFromDb) {
-        missionsState.clear()
-        missionsState.addAll(missionsFromDb)
+        missions.clear()
+        missions.addAll(missionsFromDb)
     }
 
-    val scope = rememberCoroutineScope()
+    // Clean Code
+    var changingData by remember { mutableIntStateOf(0) }
 
+    LaunchedEffect(changingData)
+    {
+        viewModel.resetViewModel()
+        viewModel.resetViewModel()
 
-    // Mission işlemleri için state'ler
-    var insertedMission by remember { mutableStateOf<CheckBoxMission?>(null) }
-    var updatedMission by remember { mutableStateOf<CheckBoxMission?>(null) }
-    var removedMission by remember { mutableStateOf<CheckBoxMission?>(null) }
-
+    }
 
     var updated by remember { mutableStateOf<TaskContent?>(null) }
 
@@ -116,32 +119,6 @@ fun TaskContentScreen(
     LaunchedEffect(updated) {
         updated?.let { content ->
             viewModel.updateTaskContent(content)
-        }
-        viewModel.resetViewModel()
-    }
-
-    // Mission güncelleme işlemi
-    LaunchedEffect(updatedMission) {
-        updatedMission?.let { mission ->
-            viewModel.updateOneMission(mission)
-        }
-        viewModel.resetViewModel()
-    }
-
-    // Yeni mission ekleme işlemi
-    LaunchedEffect(insertedMission) {
-        insertedMission?.let { mission ->
-            viewModel.insertMission(mission)
-            insertedMission = null
-        }
-        viewModel.resetViewModel()
-    }
-
-    // Mission silme işlemi
-    LaunchedEffect(removedMission) {
-        removedMission?.let { mission ->
-            viewModel.deleteMission(mission)
-            removedMission = null
         }
         viewModel.resetViewModel()
     }
@@ -156,9 +133,6 @@ fun TaskContentScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top
         ) {
-            // Note giriş alanı
-            //NoteField(note = note, onNoteChange = { note = it })
-
 
             /**
             * Note giriş alanı
@@ -276,11 +250,9 @@ fun TaskContentScreen(
                                     missionName = missionName,
                                     check = false
                                 )
-                                // Lokal listeye ekle
-                                missionsState.add(newMission)
-                                // ViewModel'e ekleme isteğini gönder
-                                insertedMission = newMission
-                                missionName = ""
+                                // Clean code
+                                viewModel.insertMission(newMission)
+                                changingData++
                             }
                         }
                     ) {
@@ -300,18 +272,13 @@ fun TaskContentScreen(
              * Mission listesini gösteren composable
              */
 
-
-            val shape1 = RoundedCornerShape(12.dp)
-
             Surface(
                 modifier = Modifier
                     .height(500.dp)
                     .padding(8.dp)
             ) {
-                // LazyColumn içerisinde missionsState kullanın
                 LazyColumn {
-                    itemsIndexed(missionsState) { index, mission ->
-                        var missionChecked by remember { mutableStateOf(mission.check) }
+                    itemsIndexed(missions) { index, mission ->
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceBetween,
@@ -324,14 +291,16 @@ fun TaskContentScreen(
                                 .padding(horizontal = 16.dp, vertical = 8.dp)
                         ) {
                             Checkbox(
-                                checked = missionChecked,
+                                checked = mission.check,
                                 onCheckedChange = { newValue ->
-                                    // UI üzerindeki checkbox değişikliğini mutable listeye yansıtın
-                                    missionChecked = newValue
-                                    missionsState[index] = mission.copy(check = newValue)
 
-                                    // ViewModel'e güncelleme isteği gönderin
-                                    updatedMission = mission.copy(check = newValue)
+                                    // Clean code
+                                    if (newValue) {
+                                        viewModel.checkMission(missions[index].missionId)
+                                    } else {
+                                        viewModel.uncheckMission(missions[index].missionId)
+                                    }
+                                    changingData++
                                 },
                                 colors = CheckboxDefaults.colors(
                                     mainColor
@@ -340,9 +309,9 @@ fun TaskContentScreen(
                             ContainerTextView(mission.missionName)
                             IconButton(
                                 onClick = {
-                                    // UI'den silme işlemi yaparken mutable listeyi güncelleyin
-                                    removedMission = mission
-                                    missionsState.removeAt(index)
+                                    // Clean code
+                                    viewModel.deleteMission(mission)
+                                    changingData++
                                 }
                             ) {
                                 Icon(
@@ -368,13 +337,16 @@ fun TaskContentScreen(
                 colors = ButtonDefaults.buttonColors(mainColor),
                 onClick = {
                     Log.d("TaskContentScreen", "Save butonuna tıklandı")
-                    Log.d("TaskContentScreen", "${contentState?.contentId ?: 0}")
+                    Log.d("TaskContentScreen", "${contentState.contentId}")
                     updated = TaskContent(
                         taskId = taskId,
-                        contentId = contentState?.contentId ?: 0,
+                        contentId = contentState.contentId,
                         missionNote = note,
                         label = labelState
                     )
+
+                    // Clean code
+                    changingData++
                 }
             ) {
                 Text("Save")
