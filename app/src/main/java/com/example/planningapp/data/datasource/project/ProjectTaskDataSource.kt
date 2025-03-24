@@ -7,13 +7,6 @@ import kotlinx.coroutines.withContext
 
 class ProjectTaskDataSource (private val projectTaskDAO: ProjectTaskDAO)
 {
-
-    suspend fun getAllProjectTasks(): HashMap<Int, List<ProjectTask>> = withContext(Dispatchers.IO) {
-        val list = projectTaskDAO.getAllProjectTasks()
-        val map = list.groupBy { it.projectId } as HashMap<Int, List<ProjectTask>>
-        return@withContext map
-    }
-
     suspend fun getProjectTasks(projectId: Int): List<ProjectTask> = withContext(Dispatchers.IO) {
         return@withContext projectTaskDAO.getProjectTasks(projectId)
     }

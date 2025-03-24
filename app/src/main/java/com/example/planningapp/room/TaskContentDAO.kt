@@ -12,6 +12,9 @@ interface TaskContentDAO {
     @Query("SELECT * FROM TaskContent WHERE TaskID = :taskId")
     suspend fun getContents(taskId: Int): TaskContent
 
+    @Query("SELECT * FROM TaskContent WHERE TaskID = :taskId")
+    suspend fun getTask(taskId: Int): TaskContent
+
     @Insert
     suspend fun insertContent(content: TaskContent)
 

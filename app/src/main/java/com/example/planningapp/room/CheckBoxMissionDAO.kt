@@ -29,4 +29,11 @@ interface CheckBoxMissionDAO {
     @Query("DELETE FROM CheckBoxMission WHERE MissionID = :missionId")
     suspend fun deleteMission(missionId: Int)
 
+
+    @Query("""UPDATE CheckBoxMission SET "Check" = 1 WHERE MissionID = :missionId""")
+    suspend fun checkMission(missionId: Int)
+
+    @Query("""UPDATE CheckBoxMission SET "Check" = 0 WHERE MissionID = :missionId""")
+    suspend fun uncheckMission(missionId: Int)
+
 }

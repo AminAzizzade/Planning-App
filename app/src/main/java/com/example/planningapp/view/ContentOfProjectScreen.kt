@@ -35,15 +35,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.example.planningapp.data.entity.project.ProjectHistory
+import com.example.planningapp.data.entity.project.ProjectTask
 import com.example.planningapp.ui.theme.containerColor
 import com.example.planningapp.ui.theme.focusedColor
 import com.example.planningapp.ui.theme.mainColor
 import com.example.planningapp.ui.theme.textColor
+import com.example.planningapp.view.partialview._cop.ProjectDescriptionSection
 import com.example.planningapp.view.partialview._cop.popup.ProjectDescriptionPopup
 import com.example.planningapp.view.partialview._cop.popup.ProjectHistoryPopup
 import com.example.planningapp.view.partialview._cop.popup.ProjectTaskPopup
+import com.example.planningapp.view.partialview._cop.row.HistoryRow
+import com.example.planningapp.view.partialview._cop.row.TaskRow
 import com.example.planningapp.view.partialview.general.NormalTextView
 import com.example.planningapp.view.viewmodel.ContentOfProjectViewModel
 
@@ -68,7 +74,6 @@ fun ContentOfProjectScreen(
     var showTaskPopUp by remember { mutableStateOf(false) }
     var showDescriptionPopup by remember { mutableStateOf(false) }
 
-    // Açıklama metnini tutacak state, başlangıçta boş
     var description by remember { mutableStateOf("") }
 
     Surface(
@@ -81,7 +86,6 @@ fun ContentOfProjectScreen(
                 .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            // Üst başlık alanı
             Column(
                 modifier = Modifier.fillMaxHeight(0.3F),
                 verticalArrangement = Arrangement.Center,
@@ -97,111 +101,33 @@ fun ContentOfProjectScreen(
                     onEditClick = { showDescriptionPopup = true }
                 )
             }
-            // History / Task seçim butonları
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight(0.1F)
-            ) {
-                val historyColor = if (selectList == "history") focusedColor else mainColor
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth(0.5F)
-                        .height(50.dp)
-                        .background(historyColor),
-                    contentAlignment = Alignment.Center
-                ) {
-                    IconButton(
-                        modifier = Modifier
-                            .width(90.dp)
-                            .height(50.dp),
-                        onClick = { selectList = "history" }
-                    ) {
-                        NormalTextView(text = "History")
-                    }
+
+            SelectionTab(
+                selectedList = selectList,
+                onSelect = { selectList = it }
+            )
+
+            HistoryAndTaskList(
+                selectList = selectList,
+                history = history,
+                task = task,
+                onHistoryDelete = { projectHistoryId ->
+                    viewModel.deleteProjectHistory(projectHistoryId)
+                    historyController++
+                },
+                onTaskDelete = { projectTaskId ->
+                    viewModel.deleteProjectTask(projectTaskId)
+                    taskController++
                 }
-                val taskColor = if (selectList == "task") focusedColor else mainColor
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp)
-                        .background(taskColor)
-                ) {
-                    IconButton(
-                        modifier = Modifier
-                            .width(90.dp)
-                            .height(50.dp)
-                            .background(taskColor),
-                        onClick = { selectList = "task" }
-                    ) {
-                        NormalTextView(text = "Task")
-                    }
+            )
+
+            AddButton(
+                onClick = {
+                    if (selectList == "history") showHistoryPopUp = true
+                    else showTaskPopUp = true
                 }
-            }
-            // Liste için yuvarlak kenarlı scroll alanı
-            Surface(
-                modifier = Modifier
-                    .fillMaxHeight(0.8F)
-                    .padding(horizontal = 16.dp),
-                shape = RoundedCornerShape(16.dp),
-                tonalElevation = 4.dp,
-                color = Color.White
-            ) {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize()
-                        .padding(start = 6.dp, end = 6.dp, top = 6.dp)
-                ) {
-                    if (selectList == "history") {
-                        items(history ?: emptyList()) { item ->
-                            HistoryRow(
-                                historyItem = item,
-                                mainColor = mainColor,
-                                textColor = textColor,
-                                onDelete = {
-                                    viewModel.deleteProjectHistory(item.projectHistoryId)
-                                    historyController++
-                                }
-                            )
-                        }
-                    } else {
-                        items(task ?: emptyList()) { taskItem ->
-                            TaskRow(
-                                taskItem = taskItem,
-                                onDelete = {
-                                    viewModel.deleteProjectTask(taskItem.projectTaskId)
-                                    taskController++
-                                }
-                            )
-                        }
-                    }
-                }
-            }
-            // Ekleme butonu
-            Box(modifier = Modifier.padding(16.dp)) {
-                Surface(
-                    modifier = Modifier
-                        .size(56.dp)
-                        .shadow(4.dp, CircleShape),
-                    shape = CircleShape,
-                    tonalElevation = 4.dp,
-                    color = focusedColor
-                ) {
-                    IconButton(
-                        onClick = {
-                            if (selectList == "history") showHistoryPopUp = true
-                            else showTaskPopUp = true
-                        },
-                        modifier = Modifier.fillMaxSize()
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Add,
-                            contentDescription = "Yeni Geçmiş Ekle",
-                            tint = Color.White,
-                            modifier = Modifier.size(28.dp)
-                        )
-                    }
-                }
-            }
+            )
+
             // Popup'lar
             if (showTaskPopUp) {
                 ProjectTaskPopup(
@@ -210,7 +136,6 @@ fun ContentOfProjectScreen(
                     onDismiss = { showTaskPopUp = false },
                     onTaskAdded = {
                         taskController++
-                        Log.d("deneme1", "onTaskAdded: $taskController")
                     }
                 )
             }
@@ -221,7 +146,6 @@ fun ContentOfProjectScreen(
                     onDismiss = { showHistoryPopUp = false },
                     onHistoryAdded = {
                         historyController++
-                        Log.d("deneme1", "onHistoryAdded: $historyController")
                     }
                 )
             }
@@ -237,6 +161,136 @@ fun ContentOfProjectScreen(
         }
     }
 }
+
+
+@Composable
+fun SelectionTab(
+    selectedList: String,
+    onSelect: (String) -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight(0.1F)
+    ) {
+        TabButton(
+            text = "History",
+            isSelected = selectedList == "history",
+            onClick = { onSelect("history") },
+            size = 0.5F        )
+        TabButton(
+            text = "Task",
+            isSelected = selectedList == "task",
+            onClick = { onSelect("task") },
+            size = 1F
+        )
+    }
+}
+
+@Composable
+fun TabButton(
+    size: Float,
+    text: String,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    val backgroundColor = if (isSelected) focusedColor else mainColor
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth(size)
+            .height(50.dp)
+            .background(backgroundColor),
+        contentAlignment = Alignment.Center
+    ) {
+        IconButton(
+            modifier = Modifier
+                .width(90.dp)
+                .height(50.dp),
+            onClick = onClick
+        ) {
+            NormalTextView(text = text)
+        }
+    }
+}
+
+
+@Composable
+fun HistoryAndTaskList(
+    selectList: String,
+    history: List<ProjectHistory>, // History elemanlarının tipini belirtmelisin
+    task: List<ProjectTask>,       // Task elemanlarının tipini belirtmelisin
+    onHistoryDelete: (projectHistoryId: Int) -> Unit,
+    onTaskDelete: (projectTaskId: Int) -> Unit
+) {
+    Surface(
+        modifier = Modifier
+            .fillMaxHeight(0.8F)
+            .padding(horizontal = 16.dp),
+        shape = RoundedCornerShape(16.dp),
+        tonalElevation = 4.dp,
+        color = Color.White
+    ) {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 6.dp, vertical = 6.dp)
+        ) {
+            if (selectList == "history") {
+                items(history) { item ->
+                    HistoryRow(
+                        historyItem = item,
+                        mainColor = mainColor,
+                        textColor = textColor,
+                        onDelete = { onHistoryDelete(item.projectHistoryId) }
+                    )
+                }
+            } else {
+                items(task) { taskItem ->
+                    TaskRow(
+                        taskItem = taskItem,
+                        onDelete = { onTaskDelete(taskItem.projectTaskId) }
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun AddButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    buttonSize: Dp = 56.dp,
+    iconSize: Dp = 28.dp,
+    buttonColor: Color = focusedColor,
+    contentDescription: String = "Yeni Geçmiş Ekle"
+) {
+    Box(modifier = modifier.padding(16.dp)) {
+        Surface(
+            modifier = Modifier
+                .size(buttonSize)
+                .shadow(4.dp, CircleShape),
+            shape = CircleShape,
+            tonalElevation = 4.dp,
+            color = buttonColor
+        ) {
+            IconButton(
+                onClick = onClick,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = contentDescription,
+                    tint = Color.White,
+                    modifier = Modifier.size(iconSize)
+                )
+            }
+        }
+    }
+}
+
+
 
 
 

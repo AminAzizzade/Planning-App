@@ -54,8 +54,8 @@ class MainActivity : ComponentActivity() {
     {
         val navController = rememberNavController()
         NavHost(navController = navController,
-            startDestination = //"calendar"
-        "project"
+            startDestination = "calendar"
+            //"project"
         )
         {
             composable("calendar") {
@@ -81,13 +81,13 @@ class MainActivity : ComponentActivity() {
                 )
             }
 
-            composable("content/{taskId}") {
-
-                val taskId = it.arguments?.getString("taskId")?.toInt()
+            composable("content/{taskId}") {backStackEntry ->
+                val taskId = backStackEntry.arguments?.getString("taskId")?.toIntOrNull()
+                val viewModel: ContentOfTaskViewModel = hiltViewModel(backStackEntry)
                 if (taskId != null) {
                     TaskContentScreen(
                         navController = navController,
-                        viewModel = contentOfTaskViewModel,
+                        viewModel = viewModel,
                         taskId = taskId
                     )
                 }

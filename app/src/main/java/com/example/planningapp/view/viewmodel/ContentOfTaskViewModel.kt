@@ -1,6 +1,7 @@
 package com.example.planningapp.view.viewmodel
 
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.planningapp.data.entity.CheckBoxMission
@@ -15,23 +16,37 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ContentOfTaskViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
     private var repositoryCoT: ContentOfTaskRepository,
     private var repositoryCBM: CheckBoxMissionRepository
 ) : ViewModel()
 {
 
+    val taskId: String? = savedStateHandle["taskId"]
+
     val allTasks = MutableLiveData<HashMap<Int, TaskContent>>()
     val allMissions = MutableLiveData<HashMap<Int, List<CheckBoxMission>>>()
 
+    val task = MutableLiveData<TaskContent>()
+
     init{
-        getAllTasks()
-        getAllMissions()
+        if (
+            taskId != null
+        ) {
+            //val taskId = taskId.toInt()
+            getAllTasks()
+            getAllMissions()
+        }
     }
 
     fun resetViewModel()
     {
-        getAllTasks()
-        getAllMissions()
+        if (
+            taskId != null
+        ) {
+            getAllTasks()
+            getAllMissions()
+        }
     }
 
     private fun getAllTasks()
@@ -47,6 +62,20 @@ class ContentOfTaskViewModel @Inject constructor(
             allMissions.value = repositoryCBM.getAllMissions()
         }
     }
+
+    fun checkMission(missionId: Int)
+    {
+        CoroutineScope(Dispatchers.Main).launch {
+            repositoryCBM.checkMission(missionId)
+        }
+    }
+
+    fun uncheckMission(missionId: Int) {
+        CoroutineScope(Dispatchers.Main).launch {
+            repositoryCBM.uncheckMission(missionId)
+        }
+    }
+
 
     fun insertTaskContent(taskContent: TaskContent)
     {
@@ -72,13 +101,6 @@ class ContentOfTaskViewModel @Inject constructor(
     {
         viewModelScope.launch {
             repositoryCoT.updateContent(taskContent)
-        }
-    }
-
-    fun updateOneMission(mission: CheckBoxMission)
-    {
-        CoroutineScope(Dispatchers.Main).launch {
-            repositoryCBM.updateMission(mission)
         }
     }
 }
