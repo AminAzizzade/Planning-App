@@ -35,51 +35,49 @@ import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.TextStyle
 import java.util.Locale
+import androidx.activity.compose.BackHandler
+import androidx.compose.runtime.LaunchedEffect
 
 @Composable
-fun CalendarScreen(onDayClick: (String) -> Unit) {
-    // currentMonth'ı mutable state olarak tutuyoruz.
-    var currentMonth by remember { mutableStateOf(YearMonth.now()) }
+fun CalendarScreen(
+    onDayClick: (LocalDate) -> Unit,
+    selectedDate: LocalDate? = null
+) {
+    var currentMonth by remember { mutableStateOf(selectedDate?.let { YearMonth.of(it.year, it.month) } ?: YearMonth.now()) }
+
+    LaunchedEffect(selectedDate) {
+        selectedDate?.let {
+            currentMonth = YearMonth.of(it.year, it.month)
+        }
+    }
 
     val daysInMonth = currentMonth.lengthOfMonth()
     val firstDayOfMonth = currentMonth.atDay(1).dayOfWeek
-    val today = LocalDate.now()
 
-    Surface {
-
-    }
-    Spacer(modifier = Modifier.size(20.dp))
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
             .background(backgroundColor)
     ) {
-        // Ay değiştirme butonları ve Ay-Başlık kısmı
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 16.dp),
+            modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Önceki Ay Butonu
             TextButton(onClick = { currentMonth = currentMonth.minusMonths(1) }) {
                 Text(text = "<", fontSize = 24.sp, color = mainColor)
             }
-            // Ay ve Yıl Başlığı
             Text(
                 text = "${currentMonth.month.getDisplayName(TextStyle.FULL, Locale.getDefault())} ${currentMonth.year}",
                 style = MaterialTheme.typography.titleLarge,
                 textAlign = TextAlign.Center
             )
-            // Sonraki Ay Butonu
             TextButton(onClick = { currentMonth = currentMonth.plusMonths(1) }) {
                 Text(text = ">", fontSize = 24.sp, color = mainColor)
             }
         }
 
-        // Günler Başlığı: Haftanın günlerini gösteren satır
         val daysOfWeek = DayOfWeek.entries.map { it.getDisplayName(TextStyle.SHORT, Locale.getDefault()) }
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -94,10 +92,8 @@ fun CalendarScreen(onDayClick: (String) -> Unit) {
                 )
             }
         }
-
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Günlerin Grid Gösterimi
         val totalCells = daysInMonth + firstDayOfMonth.value - 1
         val rows = (totalCells / 7) + 1
 
@@ -113,16 +109,16 @@ fun CalendarScreen(onDayClick: (String) -> Unit) {
                             dayCounter > daysInMonth
                         ) null else dayCounter++
 
+                        val cellDate = if (day != null) LocalDate.of(currentMonth.year, currentMonth.month, day) else null
+                        val isSelected = cellDate != null && selectedDate != null && cellDate == selectedDate
+
                         DayCell(
                             day = day,
-                            isToday = day != null &&
-                                    today.dayOfMonth == day &&
-                                    today.month == currentMonth.month &&
-                                    today.year == currentMonth.year,
+                            isToday = isSelected, // Seçili gün için farklı bir stil uygulayabilirsiniz
                             onClick = {
                                 day?.let {
-                                    val selectedDate = LocalDate.of(currentMonth.year, currentMonth.month, it)
-                                    onDayClick(selectedDate.toString())
+                                    val date = LocalDate.of(currentMonth.year, currentMonth.month, it)
+                                    onDayClick(date)
                                 }
                             }
                         )
