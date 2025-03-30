@@ -1,5 +1,6 @@
 package com.example.planningapp.view
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -29,6 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.planningapp.data.entity.project.Project
+import com.example.planningapp.ui.theme.backgroundColor
 import com.example.planningapp.ui.theme.focusedColor
 import com.example.planningapp.view.partialview.general.IconList
 import com.example.planningapp.view.partialview.general.NormalTextView
@@ -52,7 +54,9 @@ fun ProjectScreen(
 
     Surface {
         Column(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .background(backgroundColor),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         )

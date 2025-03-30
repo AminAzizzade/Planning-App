@@ -1,6 +1,7 @@
 package com.example.planningapp.view.partialview.general
 
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -25,6 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.example.planningapp.ui.theme.backgroundColor
 import com.example.planningapp.ui.theme.mainColor
 import com.example.planningapp.ui.theme.textColor
 
@@ -68,7 +70,8 @@ fun IconList(navController: NavHostController) {
     LazyRow(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(15.dp),
+            .padding(15.dp)
+            .background(backgroundColor),
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically
     ) {

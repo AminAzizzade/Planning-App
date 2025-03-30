@@ -12,6 +12,8 @@ import androidx.navigation.NavHostController
 import com.example.planningapp.view.viewmodel.DailyPlanningViewModel
 import java.time.LocalDate
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.background
+import com.example.planningapp.ui.theme.backgroundColor
 import com.example.planningapp.view.partialview.general.IconList
 
 @Composable
@@ -26,7 +28,11 @@ fun CombinedScreen(
         isCalendarScreenVisible = true
     }
 
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(backgroundColor)
+    ) {
 
         IconList(navController = navController)
 

@@ -120,10 +120,6 @@ fun DailyPlanningScreen(
     {
         Spacer(modifier = Modifier.height(16.dp))
 
-        IconList(navController = navController)
-
-        Spacer(modifier = Modifier.height(16.dp))
-
         TimeLineView(viewModel, timelineTasks, onTaskClick)
 
         TaskPopupScreen(viewModel, day, month, year)
