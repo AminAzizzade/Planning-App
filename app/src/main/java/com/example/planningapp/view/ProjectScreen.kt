@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.planningapp.data.entity.project.Project
 import com.example.planningapp.ui.theme.focusedColor
+import com.example.planningapp.view.partialview.general.IconList
 import com.example.planningapp.view.partialview.general.NormalTextView
 import com.example.planningapp.view.viewmodel.ProjectViewModel
 
@@ -58,7 +59,7 @@ fun ProjectScreen(
         {
             Spacer(modifier = Modifier.height(16.dp))
 
-            IconListLazyRow(navController)
+            IconList(navController)
 
             Text("Projects")
 

@@ -45,6 +45,7 @@ import com.example.planningapp.ui.theme.textColor
 import com.example.planningapp.view.partialview._dps.DaySelector
 import com.example.planningapp.view.partialview._dps.TaskPopupScreen
 import com.example.planningapp.view.partialview._dps.TimelineItem
+import com.example.planningapp.view.partialview.general.IconList
 import com.example.planningapp.view.viewmodel.DailyPlanningViewModel
 
 /**
@@ -119,7 +120,7 @@ fun DailyPlanningScreen(
     {
         Spacer(modifier = Modifier.height(16.dp))
 
-        IconListLazyRow(navController = navController)
+        IconList(navController = navController)
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -174,71 +175,3 @@ fun TimeLineView(
     }
 }
 
-
-@Composable
-fun IconListLazyRow(navController: NavHostController) {
-    // İkon verilerini tutan veri sınıfı
-    data class IconItem(
-        val imageVector: ImageVector,
-        val contentDescription: String,
-        val defaultColor: Color,
-        val selectedColor: Color,
-        val destination: String
-    )
-
-    // İkonları içeren liste
-    val icons = listOf(
-        IconItem(
-            imageVector = Icons.Default.CheckCircle,
-            contentDescription = "Check Circle",
-            defaultColor = textColor,
-            selectedColor = textColor,
-            destination = "project"
-        ),
-        IconItem(
-            imageVector = Icons.Default.DateRange,
-            contentDescription = "Date Range",
-            defaultColor = mainColor,
-            selectedColor = mainColor,
-            destination = "calendar"
-        ),
-        IconItem(
-            imageVector = Icons.Default.Build,
-            contentDescription = "Build",
-            defaultColor = textColor,
-            selectedColor = textColor,
-            destination = "calendar"
-        )
-    )
-
-    // Seçili ikonun index değerini tutan state
-    var selectedIndex by remember { mutableStateOf(1) }
-
-    LazyRow(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(15.dp),
-        horizontalArrangement = Arrangement.SpaceEvenly,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        itemsIndexed(icons) { index, iconItem ->
-            IconButton(
-                onClick = {
-                    Log.d("Navigation", "Selected Index: $index")
-                    navController.navigate(icons[index].destination)
-                },
-                modifier = Modifier.size(40.dp)
-            ) {
-                Icon(
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clickable { selectedIndex = index },
-                    imageVector = iconItem.imageVector,
-                    contentDescription = iconItem.contentDescription,
-                    tint = if (selectedIndex == index) mainColor else textColor
-                )
-            }
-
-        }
-    }
-}

@@ -2,8 +2,6 @@ package com.example.planningapp.view
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -14,6 +12,8 @@ import androidx.navigation.NavHostController
 import com.example.planningapp.view.viewmodel.DailyPlanningViewModel
 import java.time.LocalDate
 import androidx.activity.compose.BackHandler
+import com.example.planningapp.view.partialview.general.IconList
+
 @Composable
 fun CombinedScreen(
     viewModel: DailyPlanningViewModel,
@@ -28,7 +28,7 @@ fun CombinedScreen(
 
     Column(modifier = Modifier.fillMaxSize()) {
 
-        IconListLazyRow(navController = navController)
+        IconList(navController = navController)
 
         if (isCalendarScreenVisible) {
             CalendarScreen(
