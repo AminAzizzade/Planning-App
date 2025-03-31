@@ -15,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.planningapp.data.entity.project.ProjectTask
 import com.example.planningapp.ui.theme.focusedColor
@@ -23,7 +24,8 @@ import com.example.planningapp.ui.theme.mainColor
 @Composable
 fun TaskRow(
     taskItem: ProjectTask, // Task modelinizin tipi
-    onDelete: () -> Unit
+    onDelete: () -> Unit,
+    iconColor: Color
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -35,7 +37,7 @@ fun TaskRow(
             imageVector = Icons.Default.CheckCircle,
             contentDescription = "Görev İkonu",
             modifier = Modifier.size(24.dp),
-            tint = mainColor
+            tint = iconColor
         )
         Spacer(modifier = Modifier.width(8.dp))
         Text(

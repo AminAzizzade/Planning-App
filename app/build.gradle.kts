@@ -94,4 +94,6 @@ dependencies {
 
     implementation("androidx.compose.ui:ui-text-google-fonts:1.7.7")
 
+    implementation ("androidx.hilt:hilt-navigation-compose:1.0.0")
+
 }

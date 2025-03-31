@@ -1,7 +1,14 @@
 package com.example.planningapp.view
 
 import android.util.Log
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,6 +27,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
@@ -33,10 +41,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.planningapp.data.entity.project.ProjectHistory
 import com.example.planningapp.data.entity.project.ProjectTask
@@ -44,6 +56,7 @@ import com.example.planningapp.ui.theme.containerColor
 import com.example.planningapp.ui.theme.focusedColor
 import com.example.planningapp.ui.theme.mainColor
 import com.example.planningapp.ui.theme.textColor
+import com.example.planningapp.ui.theme.unfocusedColor
 import com.example.planningapp.view.partialview._cop.ProjectDescriptionSection
 import com.example.planningapp.view.partialview._cop.popup.ProjectDescriptionPopup
 import com.example.planningapp.view.partialview._cop.popup.ProjectHistoryPopup
@@ -76,6 +89,12 @@ fun ContentOfProjectScreen(
 
     var description by remember { mutableStateOf("") }
 
+    val containerColor = containerColor
+    val focusedColor = focusedColor
+
+    val unfocusedColor = unfocusedColor
+    val iconColor = mainColor
+
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = containerColor
@@ -104,7 +123,9 @@ fun ContentOfProjectScreen(
 
             SelectionTab(
                 selectedList = selectList,
-                onSelect = { selectList = it }
+                onSelect = { selectList = it },
+                focusColor = focusedColor,
+                unfocusedColor = unfocusedColor
             )
 
             HistoryAndTaskList(
@@ -118,7 +139,9 @@ fun ContentOfProjectScreen(
                 onTaskDelete = { projectTaskId ->
                     viewModel.deleteProjectTask(projectTaskId)
                     taskController++
-                }
+                },
+                historyObjectColor = unfocusedColor,
+                iconColor = iconColor
             )
 
             AddButton(
@@ -128,7 +151,6 @@ fun ContentOfProjectScreen(
                 }
             )
 
-            // Popup'lar
             if (showTaskPopUp) {
                 ProjectTaskPopup(
                     projectId = projectId,
@@ -166,7 +188,9 @@ fun ContentOfProjectScreen(
 @Composable
 fun SelectionTab(
     selectedList: String,
-    onSelect: (String) -> Unit
+    onSelect: (String) -> Unit,
+    focusColor: Color,
+    unfocusedColor: Color
 ) {
     Row(
         modifier = Modifier
@@ -177,42 +201,76 @@ fun SelectionTab(
             text = "History",
             isSelected = selectedList == "history",
             onClick = { onSelect("history") },
-            size = 0.5F        )
+            size = 0.5F,
+            focusedColor = focusColor,
+            unfocusedColor = unfocusedColor
+        )
         TabButton(
             text = "Task",
             isSelected = selectedList == "task",
             onClick = { onSelect("task") },
-            size = 1F
+            size = 1F,
+            focusedColor = focusColor,
+            unfocusedColor = unfocusedColor
         )
     }
 }
-
 @Composable
 fun TabButton(
     size: Float,
     text: String,
     isSelected: Boolean,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    focusedColor: Color,
+    unfocusedColor: Color
 ) {
-    val backgroundColor = if (isSelected) focusedColor else mainColor
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+
+    val backgroundColor by animateColorAsState(
+        targetValue = if (isSelected) focusedColor else unfocusedColor,
+        animationSpec = tween(300),
+        label = "backgroundColor"
+    )
+
+    val fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal
+    val fontSize = if (isSelected) 20.sp else 18.sp
+
+    val scale by animateFloatAsState(
+        targetValue = if (isPressed) 0.95f else 1f,
+        animationSpec = tween(100),
+        label = "scale"
+    )
+
+    val alpha by animateFloatAsState(
+        targetValue = if (isPressed) 0.7f else 1f,
+        animationSpec = tween(100),
+        label = "alpha"
+    )
 
     Box(
         modifier = Modifier
             .fillMaxWidth(size)
             .height(50.dp)
-            .background(backgroundColor),
+            .scale(scale)
+            .alpha(alpha)
+            .background(backgroundColor, shape = RoundedCornerShape(12.dp))
+            .clickable(
+                interactionSource = interactionSource,
+                indication = rememberRipple(bounded = true, color = Color.Gray),
+                onClick = onClick
+            ),
         contentAlignment = Alignment.Center
     ) {
-        IconButton(
-            modifier = Modifier
-                .width(90.dp)
-                .height(50.dp),
-            onClick = onClick
-        ) {
-            NormalTextView(text = text)
-        }
+        NormalTextView(
+            text = text,
+            fontWeight = fontWeight,
+            fontSize = fontSize,
+            color = Color.White
+        )
     }
 }
+
 
 
 @Composable
@@ -221,8 +279,11 @@ fun HistoryAndTaskList(
     history: List<ProjectHistory>, // History elemanlarının tipini belirtmelisin
     task: List<ProjectTask>,       // Task elemanlarının tipini belirtmelisin
     onHistoryDelete: (projectHistoryId: Int) -> Unit,
-    onTaskDelete: (projectTaskId: Int) -> Unit
+    onTaskDelete: (projectTaskId: Int) -> Unit,
+    historyObjectColor: Color,
+    iconColor: Color
 ) {
+
     Surface(
         modifier = Modifier
             .fillMaxHeight(0.8F)
@@ -240,7 +301,7 @@ fun HistoryAndTaskList(
                 items(history) { item ->
                     HistoryRow(
                         historyItem = item,
-                        mainColor = mainColor,
+                        mainColor = historyObjectColor,
                         textColor = textColor,
                         onDelete = { onHistoryDelete(item.projectHistoryId) }
                     )
@@ -249,7 +310,8 @@ fun HistoryAndTaskList(
                 items(task) { taskItem ->
                     TaskRow(
                         taskItem = taskItem,
-                        onDelete = { onTaskDelete(taskItem.projectTaskId) }
+                        onDelete = { onTaskDelete(taskItem.projectTaskId) },
+                        iconColor = iconColor
                     )
                 }
             }

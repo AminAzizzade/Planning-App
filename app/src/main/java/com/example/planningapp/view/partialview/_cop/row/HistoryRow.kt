@@ -23,6 +23,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.planningapp.data.entity.project.HistoryLabel
 import com.example.planningapp.data.entity.project.ProjectHistory
 import com.example.planningapp.ui.theme.focusedColor
@@ -44,8 +45,7 @@ fun HistoryRow(
             modifier = Modifier.padding(end = 16.dp)
         ) {
             val color = if (historyItem.historyLabel == HistoryLabel.BAD) Color.Red else if (historyItem.historyLabel == HistoryLabel.MODERATE) Color.Yellow else Color.Green
-
-            // Daire simgesi (pozitif için yeşil, negatif için kırmızı)
+            
             Box(
                 modifier = Modifier
                     .size(40.dp) // Dış çerçeve boyutu
@@ -72,19 +72,31 @@ fun HistoryRow(
             )
         }
 
-        NormalTextView(
-            text = historyItem.projectHistoryName,
-            color = textColor,
+        Column(
             modifier = Modifier.weight(1f),
-            fontSize = 18
-        )
-
-        IconButton(onClick = onDelete) {
-            Icon(
-                imageVector = Icons.Default.Delete,
-                contentDescription = "Sil",
-                tint = focusedColor
             )
+        {
+            NormalTextView(
+                text = historyItem.projectHistoryName,
+                color = textColor,
+                //modifier = Modifier.weight(1f),
+                fontSize = 18.sp
+            )
+
+            Spacer(modifier = Modifier.height(37.dp))
         }
+
+        Column {
+            IconButton(onClick = onDelete) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Sil",
+                    tint = focusedColor
+                )
+            }
+
+            Spacer(modifier = Modifier.height(32.dp))
+        }
+
     }
 }
