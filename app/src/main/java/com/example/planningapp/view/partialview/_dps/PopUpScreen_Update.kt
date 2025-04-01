@@ -49,6 +49,7 @@ fun TaskUpdatePopupScreen(
     initialTask: Task,
     onDismiss: () -> Unit = {},
     eventID: Int,
+    onUpdate: () -> Unit
 ) {
     var showPopup by remember { mutableStateOf(true) }
     var updatedTask by remember { mutableStateOf<Task?>(null) }
@@ -65,6 +66,7 @@ fun TaskUpdatePopupScreen(
             updatedTask = null
             showPopup = true
             onDismiss()
+            onUpdate()
         }
     }
 

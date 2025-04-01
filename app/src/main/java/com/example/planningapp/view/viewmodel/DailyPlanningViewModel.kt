@@ -15,6 +15,11 @@ class DailyPlanningViewModel @Inject constructor(private var repository: DailyPl
 {
     val monthDays = MutableLiveData<HashMap<Int, Day>>()
 
+    fun resetViewModel(month: Int, year: Int)
+    {
+        getMonthDays(month, year)
+    }
+
     fun getMonthDays(month: Int, year: Int)
     {
         CoroutineScope(Dispatchers.Main).launch {

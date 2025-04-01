@@ -40,7 +40,8 @@ fun TaskPopupScreen(
     viewModel: DailyPlanningViewModel,
     day: Int,
     month: Int,
-    year: Int
+    year: Int,
+    onChange: () -> Int
 ) {
     var showPopup by remember { mutableStateOf(false) }
     var savedTask by remember { mutableStateOf<Task?>(null) }
@@ -55,6 +56,7 @@ fun TaskPopupScreen(
             )
             savedTask = null
         }
+        onChange()
     }
 
     if (showPopup) {
@@ -196,7 +198,6 @@ fun taskFormScreen(
             onClick = {
                 if (taskName.isNotBlank()) {
                     task = Task(taskName, startTime, endTime) // Task nesnesini oluştur
-                    Log.d("TaskForm", "Task Oluşturuldu: $task") // Logda göster
                     onSave(task!!) // Onaylanan task nesnesini döndür
                 }
             },

@@ -72,11 +72,6 @@ fun TaskContentScreen(
     val allContents by viewModel.allTasks.observeAsState(mapOf())
     val contentState = allContents[taskId]
 
-    //val contentState = viewModel.task.value
-    //val missions by viewModel.missions.observeAsState(emptyList())
-
-    Log.d("TaskContentScreen", "contentState: $contentState")
-
     if (contentState == null) {
         EmptyDataView(onAddClick = {
             val newContent = TaskContent(
@@ -338,8 +333,6 @@ fun TaskContentScreen(
                 ,
                 colors = ButtonDefaults.buttonColors(mainColor),
                 onClick = {
-                    Log.d("TaskContentScreen", "Save butonuna tıklandı")
-                    Log.d("TaskContentScreen", "${contentState.contentId}")
                     updated = TaskContent(
                         taskId = taskId,
                         contentId = contentState.contentId,

@@ -62,7 +62,6 @@ private fun ColoredLeftBar() {
 }
 
 fun getSecondsSinceMidnight(): Long {
-    Log.d("calculateOverlayText", "${ZoneId.systemDefault()}")
     return LocalTime.now(ZoneId.systemDefault()).toSecondOfDay().toLong()
 }
 
@@ -73,7 +72,6 @@ private fun calculateOverlayText(
     taskStartTimeMin: Int
 ): String {
     val taskStartTimeSec = taskStartTimeMin * 60L
-    Log.d("calculateOverlayText", "currentTimeSec: $currentTimeSec, taskStartTimeSec: $taskStartTimeSec")
     return if (currentTimeSec >= taskStartTimeSec) {
         "ongoing"
     } else {
@@ -133,7 +131,8 @@ fun TimelineItem(
     viewModel: DailyPlanningViewModel,
     event: TimeLineTask,
     navController: NavHostController,
-    isNextTask: Boolean = false
+    isNextTask: Boolean = false,
+    onChange: () -> Unit,
 ) {
     val startTimeInt = event.startTime
     val startTimeText = TimeConverterService.convert(startTimeInt)
@@ -234,7 +233,10 @@ fun TimelineItem(
     if (showOptionsDialog) {
         TaskOptionsDialog(
             onDismiss = { showOptionsDialog = false },
-            onDelete = { viewModel.deleteTimeLineTask(event.taskID) },
+            onDelete = {
+                viewModel.deleteTimeLineTask(event.taskID)
+                onChange()
+                       },
             onUpdate = { showUpdateDialog = true }
         )
     }
@@ -244,7 +246,8 @@ fun TimelineItem(
             viewModel = viewModel,
             initialTask = TaskConverterService.convertToTask(event),
             eventID = event.taskID,
-            onDismiss = { showUpdateDialog = false }
+            onDismiss = { showUpdateDialog = false },
+            onUpdate = { onChange() }
         )
     }
 }
