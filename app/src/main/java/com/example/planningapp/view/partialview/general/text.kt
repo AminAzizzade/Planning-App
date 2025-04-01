@@ -11,6 +11,7 @@ import androidx.compose.ui.unit.sp
 import com.example.planningapp.ui.theme.focusedColor
 import com.example.planningapp.ui.theme.fontFamily
 import com.example.planningapp.ui.theme.textColor
+import com.example.planningapp.ui.theme.unfocusedColor
 
 @Composable
 fun TimeTextView(time: String)
@@ -19,6 +20,18 @@ fun TimeTextView(time: String)
         text = time,
         color = focusedColor,
         fontSize = 18.sp,
+        fontWeight = FontWeight.ExtraBold,
+        fontFamily = FontFamily.Monospace,
+    )
+}
+
+@Composable
+fun HoursTextView(time: String)
+{
+    Text(
+        text = time,
+        color = unfocusedColor,
+        fontSize = 12.sp,
         fontWeight = FontWeight.ExtraBold,
         fontFamily = FontFamily.Monospace,
     )

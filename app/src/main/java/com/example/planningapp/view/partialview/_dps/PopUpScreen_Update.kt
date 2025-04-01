@@ -50,7 +50,7 @@ fun TaskUpdatePopupScreen(
     onDismiss: () -> Unit = {},
     eventID: Int,
 ) {
-    var showPopup by remember { mutableStateOf(false) }
+    var showPopup by remember { mutableStateOf(true) }
     var updatedTask by remember { mutableStateOf<Task?>(null) }
 
     // updatedTask değeri değiştiğinde, viewModel üzerinden güncelleme işlemi tetiklenir.
@@ -63,7 +63,7 @@ fun TaskUpdatePopupScreen(
                 TimeConverterService.convert(task.endTime)
             )
             updatedTask = null
-            showPopup = false
+            showPopup = true
             onDismiss()
         }
     }

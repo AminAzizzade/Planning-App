@@ -48,7 +48,7 @@ fun CombinedScreen(
             DailyPlanningScreen(
                 viewModel = viewModel,
                 date = selectedDate.toString(),
-                onTaskClick = { /* Görev tıklama işlemleri */ },
+                onTaskClick = { navController.navigate("taskDetail/$it") },
                 navController = navController
             )
         }

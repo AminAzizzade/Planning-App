@@ -47,6 +47,7 @@ import com.example.planningapp.view.partialview._dps.TaskPopupScreen
 import com.example.planningapp.view.partialview._dps.TimelineItem
 import com.example.planningapp.view.partialview.general.IconList
 import com.example.planningapp.view.viewmodel.DailyPlanningViewModel
+import java.time.LocalTime
 
 /**
  * Görevleri temsil eden basit model
@@ -114,13 +115,14 @@ fun DailyPlanningScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            //.padding(16.dp),
+                ,
         verticalArrangement = Arrangement.SpaceBetween
     )
     {
         Spacer(modifier = Modifier.height(16.dp))
 
-        TimeLineView(viewModel, timelineTasks, onTaskClick)
+        TimeLineView(viewModel, timelineTasks, navController)
 
         TaskPopupScreen(viewModel, day, month, year)
 
@@ -144,30 +146,43 @@ fun DailyPlanningScreen(
 fun TimeLineView(
     viewModel: DailyPlanningViewModel,
     list: List<TimeLineTask>,
-    onTaskClick: (Int) -> Unit)
-{
+    navController: NavHostController
+) {
+    // Şu anki zamanı dakika cinsinden hesaplayalım
+    val now = LocalTime.now()
+    val nowInt = now.hour * 60 + now.minute
+
+    for (item in list) {
+        Log.d("now", item.startTime.toString())
+    }
+
+    // Listedeki, geçerli dakikadan sonra başlayan ilk görevin taskID'sini alalım.
+    val nextTaskId = remember(list, nowInt) {
+        list.firstOrNull { it.startTime > nowInt }?.taskID
+    }
+
     Surface(
         modifier = Modifier
             .fillMaxHeight(0.8f)
-            .background(Color.Black)
-            //.padding(16.dp)
-            .size(500.dp)
+            //.background(Color.Black)
+            //.size(500.dp)
     ) {
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.Top
-        )
-        {
+                //.padding(horizontal = 16.dp)
+                .background(Color.White)
+        ) {
             items(list) { event ->
                 TimelineItem(
-                    viewModel,
-                    onTaskClick = onTaskClick,
+                    viewModel = viewModel,
+                    navController = navController,
                     event = event,
+                    isNextTask = (event.taskID == nextTaskId)  // Sıradaki görev ise true
                 )
             }
         }
     }
 }
+
 
