@@ -12,6 +12,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.planningapp.ui.theme.PlanningAppTheme
 import com.example.planningapp.view.CalendarScreen
+import com.example.planningapp.view.CombinedScreen
 import com.example.planningapp.view.ContentOfProjectScreen
 import com.example.planningapp.view.DailyPlanningScreen
 import com.example.planningapp.view.ProjectScreen
@@ -54,10 +55,19 @@ class MainActivity : ComponentActivity() {
     {
         val navController = rememberNavController()
         NavHost(navController = navController,
-            startDestination = "calendar"
+            startDestination = "home"
+            //"calendar"
             //"project"
         )
         {
+            composable("home")
+            {
+                CombinedScreen(
+                    viewModel = dailyPlanningViewModel,
+                    navController = navController
+                )
+            }
+
             composable("calendar") {
 
                 CalendarScreen(

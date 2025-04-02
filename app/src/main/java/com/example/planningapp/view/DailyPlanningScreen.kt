@@ -2,7 +2,6 @@ package com.example.planningapp.view
 
 import android.util.Log
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -10,18 +9,8 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Build
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -29,23 +18,19 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.planningapp.data.entity.TimeLineTask
 import com.example.planningapp.service.DateExtractorService
-import com.example.planningapp.ui.theme.mainColor
-import com.example.planningapp.ui.theme.textColor
 import com.example.planningapp.view.partialview._dps.DaySelector
 import com.example.planningapp.view.partialview._dps.TaskPopupScreen
 import com.example.planningapp.view.partialview._dps.TimelineItem
 import com.example.planningapp.view.viewmodel.DailyPlanningViewModel
+import java.time.LocalTime
 
 /**
  * Görevleri temsil eden basit model
@@ -88,6 +73,11 @@ fun DailyPlanningScreen(
      */
     var day by remember{ mutableIntStateOf(calculatedDay)}
 
+    var taskController by remember { mutableIntStateOf(0) }
+    LaunchedEffect(taskController) {
+        viewModel.resetViewModel(month, year)
+    }
+
 
     /**
      * Fetch monthly data
@@ -106,39 +96,40 @@ fun DailyPlanningScreen(
         }
     }
 
-   /**
+    /**
      * UI düzeni
      */
     
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .background(Color.White)
+                ,
         verticalArrangement = Arrangement.SpaceBetween
     )
     {
         Spacer(modifier = Modifier.height(16.dp))
 
-        IconListLazyRow(navController = navController)
+        TimeLineView(viewModel, timelineTasks, navController, onChange =  { taskController++ })
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight()
+                .background(Color.White)
+        ) {
 
-        TimeLineView(viewModel, timelineTasks, onTaskClick)
+            TaskPopupScreen(viewModel, day, month, year, onChange = { taskController++ })
 
-        TaskPopupScreen(viewModel, day, month, year)
+            DaySelector(
+                selectedDay = day,
+                lastDayOfMonth = lastDayOfMonth,
+                onDaySelected = {
+                        newDay -> day = newDay
+                }
+            )
+        }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Gün seçici (5 günlük kaydırmalı liste)
-        DaySelector(
-            selectedDay = day,
-            lastDayOfMonth = lastDayOfMonth,
-            onDaySelected = {
-                    newDay -> day = newDay
-            }
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
     }
 }
 
@@ -147,27 +138,38 @@ fun DailyPlanningScreen(
 fun TimeLineView(
     viewModel: DailyPlanningViewModel,
     list: List<TimeLineTask>,
-    onTaskClick: (Int) -> Unit)
-{
+    navController: NavHostController,
+    onChange: () -> Unit,
+) {
+    // Şu anki zamanı dakika cinsinden hesaplayalım
+    val now = LocalTime.now()
+    val nowInt = now.hour * 60 + now.minute
+
+
+    // Listedeki, geçerli dakikadan sonra başlayan ilk görevin taskID'sini alalım.
+    val nextTaskId = remember(list, nowInt) {
+        list.firstOrNull { it.startTime > nowInt }?.taskID
+    }
+
     Surface(
         modifier = Modifier
             .fillMaxHeight(0.8f)
-            .background(Color.Black)
-            //.padding(16.dp)
-            .size(500.dp)
+            //.background(Color.Black)
+            //.size(500.dp)
     ) {
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.Top
-        )
-        {
+                //.padding(horizontal = 16.dp)
+                .background(Color.White)
+        ) {
             items(list) { event ->
                 TimelineItem(
-                    viewModel,
-                    onTaskClick = onTaskClick,
+                    viewModel = viewModel,
+                    navController = navController,
                     event = event,
+                    isNextTask = (event.taskID == nextTaskId),  // Sıradaki görev ise true
+                    onChange = { onChange() },
                 )
             }
         }
@@ -175,70 +177,3 @@ fun TimeLineView(
 }
 
 
-@Composable
-fun IconListLazyRow(navController: NavHostController) {
-    // İkon verilerini tutan veri sınıfı
-    data class IconItem(
-        val imageVector: ImageVector,
-        val contentDescription: String,
-        val defaultColor: Color,
-        val selectedColor: Color,
-        val destination: String
-    )
-
-    // İkonları içeren liste
-    val icons = listOf(
-        IconItem(
-            imageVector = Icons.Default.CheckCircle,
-            contentDescription = "Check Circle",
-            defaultColor = textColor,
-            selectedColor = textColor,
-            destination = "project"
-        ),
-        IconItem(
-            imageVector = Icons.Default.DateRange,
-            contentDescription = "Date Range",
-            defaultColor = mainColor,
-            selectedColor = mainColor,
-            destination = "calendar"
-        ),
-        IconItem(
-            imageVector = Icons.Default.Build,
-            contentDescription = "Build",
-            defaultColor = textColor,
-            selectedColor = textColor,
-            destination = "calendar"
-        )
-    )
-
-    // Seçili ikonun index değerini tutan state
-    var selectedIndex by remember { mutableStateOf(1) }
-
-    LazyRow(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(15.dp),
-        horizontalArrangement = Arrangement.SpaceEvenly,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        itemsIndexed(icons) { index, iconItem ->
-            IconButton(
-                onClick = {
-                    Log.d("Navigation", "Selected Index: $index")
-                    navController.navigate(icons[index].destination)
-                },
-                modifier = Modifier.size(40.dp)
-            ) {
-                Icon(
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clickable { selectedIndex = index },
-                    imageVector = iconItem.imageVector,
-                    contentDescription = iconItem.contentDescription,
-                    tint = if (selectedIndex == index) mainColor else textColor
-                )
-            }
-
-        }
-    }
-}
