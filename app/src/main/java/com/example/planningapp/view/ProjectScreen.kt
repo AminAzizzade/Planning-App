@@ -19,7 +19,6 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
@@ -31,7 +30,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.planningapp.data.entity.project.Project
 import com.example.planningapp.ui.theme.backgroundColor
-import com.example.planningapp.ui.theme.focusedColor
+import com.example.planningapp.ui.theme.mainColor
+import com.example.planningapp.ui.theme.unfocusedColor
 import com.example.planningapp.view.partialview.general.IconList
 import com.example.planningapp.view.partialview.general.NormalTextView
 import com.example.planningapp.view.viewmodel.ProjectViewModel
@@ -61,11 +61,11 @@ fun ProjectScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         )
         {
-            Spacer(modifier = Modifier.height(16.dp))
 
-            IconList(navController)
-
-            Text("Projects")
+            IconList(
+                navController,
+                index = 0
+            )
 
             LazyColumn(
                 modifier = Modifier.padding(8.dp),
@@ -106,12 +106,12 @@ fun ProjectView(
                 elevation = 1.dp,
                 shape = viewShape,
                 clip = false,
-                ambientColor = focusedColor,
-                spotColor = focusedColor
+                ambientColor = mainColor,
+                spotColor = mainColor
             )
             .padding(2.dp),
         shape = viewShape,
-        color = Color(focusedColor.value)
+        color = Color(mainColor.value)
     ) {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -129,11 +129,11 @@ fun ProjectView(
                         elevation = 1.dp,
                         shape = viewShape,
                         clip = false,
-                        ambientColor = focusedColor,
-                        spotColor = focusedColor
+                        ambientColor = unfocusedColor,
+                        spotColor = unfocusedColor
                     ),
                 shape = viewShape,
-                color = focusedColor
+                color =  unfocusedColor
             )
             {
                 IconButton(
@@ -141,6 +141,7 @@ fun ProjectView(
                         navController.navigate("project/${project.projectId}")
                     },
                     modifier = Modifier.fillMaxSize()
+                        .background(unfocusedColor)
                 )
                 {
                     Icon(

@@ -96,14 +96,14 @@ fun DailyPlanningScreen(
         }
     }
 
-   /**
+    /**
      * UI düzeni
      */
     
     Column(
         modifier = Modifier
             .fillMaxSize()
-            //.padding(16.dp),
+            .background(Color.White)
                 ,
         verticalArrangement = Arrangement.SpaceBetween
     )
@@ -112,20 +112,24 @@ fun DailyPlanningScreen(
 
         TimeLineView(viewModel, timelineTasks, navController, onChange =  { taskController++ })
 
-        TaskPopupScreen(viewModel, day, month, year, onChange = { taskController++ })
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight()
+                .background(Color.White)
+        ) {
 
-        Spacer(modifier = Modifier.height(16.dp))
+            TaskPopupScreen(viewModel, day, month, year, onChange = { taskController++ })
 
-        // Gün seçici (5 günlük kaydırmalı liste)
-        DaySelector(
-            selectedDay = day,
-            lastDayOfMonth = lastDayOfMonth,
-            onDaySelected = {
-                    newDay -> day = newDay
-            }
-        )
+            DaySelector(
+                selectedDay = day,
+                lastDayOfMonth = lastDayOfMonth,
+                onDaySelected = {
+                        newDay -> day = newDay
+                }
+            )
+        }
 
-        Spacer(modifier = Modifier.height(16.dp))
     }
 }
 

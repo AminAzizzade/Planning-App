@@ -34,7 +34,10 @@ fun CombinedScreen(
             .background(backgroundColor)
     ) {
 
-        IconList(navController = navController)
+        IconList(
+            navController = navController,
+            index = 1
+        )
 
         if (isCalendarScreenVisible) {
             CalendarScreen(

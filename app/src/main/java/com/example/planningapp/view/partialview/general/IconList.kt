@@ -67,11 +67,10 @@ fun IconList(
     LazyRow(
         modifier = Modifier
             .fillMaxWidth()
-            .fillMaxHeight(0.12F)
-            .padding(15.dp)
+            .fillMaxHeight(0.08F)
             .background(backgroundColor),
         horizontalArrangement = Arrangement.SpaceEvenly,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.Bottom
     ) {
         itemsIndexed(icons) { index, iconItem ->
 
