@@ -41,7 +41,6 @@ data class Task(
     val endTime: String = ""
 )
 
-// Ayların son günlerini tutan dizi
 val lastDayOfMonths = intArrayOf(31,28,31,30,31,30,31,31,30,31,30,31)
 
 @Composable
@@ -141,12 +140,9 @@ fun TimeLineView(
     navController: NavHostController,
     onChange: () -> Unit,
 ) {
-    // Şu anki zamanı dakika cinsinden hesaplayalım
     val now = LocalTime.now()
     val nowInt = now.hour * 60 + now.minute
 
-
-    // Listedeki, geçerli dakikadan sonra başlayan ilk görevin taskID'sini alalım.
     val nextTaskId = remember(list, nowInt) {
         list.firstOrNull { it.startTime > nowInt }?.taskID
     }
@@ -154,13 +150,10 @@ fun TimeLineView(
     Surface(
         modifier = Modifier
             .fillMaxHeight(0.8f)
-            //.background(Color.Black)
-            //.size(500.dp)
     ) {
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
-                //.padding(horizontal = 16.dp)
                 .background(Color.White)
         ) {
             items(list) { event ->
@@ -168,7 +161,7 @@ fun TimeLineView(
                     viewModel = viewModel,
                     navController = navController,
                     event = event,
-                    isNextTask = (event.taskID == nextTaskId),  // Sıradaki görev ise true
+                    isNextTask = (event.taskID == nextTaskId),
                     onChange = { onChange() },
                 )
             }

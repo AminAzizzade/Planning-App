@@ -13,7 +13,6 @@ import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -35,14 +34,7 @@ import com.example.planningapp.ui.theme.timeTextColor
 import com.example.planningapp.view.Task
 import com.example.planningapp.view.viewmodel.DailyPlanningViewModel
 
-/**
- * Bu composable, mevcut bir görevi güncellemek için bir pop-up (AlertDialog) sunar.
- *
- * @param viewModel Güncelleme işleminin tetikleneceği view model.
- * @param initialTask Güncellenecek mevcut görev nesnesi.
- * @param onDismiss Güncelleme pop-up'ı kapatıldığında çalışacak callback.
- * @param eventID Güncellenecek görevin ID'si.
- */
+
 @Composable
 fun TaskUpdatePopupScreen(
     viewModel: DailyPlanningViewModel,
@@ -54,7 +46,6 @@ fun TaskUpdatePopupScreen(
     var showPopup by remember { mutableStateOf(true) }
     var updatedTask by remember { mutableStateOf<Task?>(null) }
 
-    // updatedTask değeri değiştiğinde, viewModel üzerinden güncelleme işlemi tetiklenir.
     LaunchedEffect(updatedTask) {
         updatedTask?.let { task ->
             viewModel.updateTimeLineTask(
@@ -79,7 +70,6 @@ fun TaskUpdatePopupScreen(
             },
             title = { Text("Görevi Güncelle") },
             text = {
-                // Form ekranında mevcut görevin bilgileri doldurularak güncelleniyor.
                 taskUpdateFormScreen(
                     initialTask = initialTask,
                     onUpdate = { task ->
@@ -88,7 +78,6 @@ fun TaskUpdatePopupScreen(
                 )
             },
             confirmButton = {
-                // Güncelle butonu form içerisindeki "Güncelle" butonuna entegredir.
             },
             dismissButton = {
                 Button(onClick = {
@@ -114,14 +103,6 @@ fun TaskUpdatePopupScreen(
     }
 }
 
-/**
- * Bu composable, güncellenecek görevin bilgilerini düzenlemek için bir form sunar.
- *
- * @param initialTask Form açılırken mevcut görev bilgilerini yükler.
- * @param onUpdate Kullanıcı "Güncelle" butonuna bastığında oluşturulan güncel Task nesnesini dışarıya döndürür.
- * @return Oluşturulan Task nesnesi (opsiyonel).
- */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun taskUpdateFormScreen(
     initialTask: Task,
@@ -134,7 +115,6 @@ fun taskUpdateFormScreen(
 
     val context = LocalContext.current
 
-    // Başlangıç saati seçimi için TimePickerDialog
     val startTimePicker = remember {
         TimePickerDialog(
             context,
@@ -145,7 +125,6 @@ fun taskUpdateFormScreen(
         )
     }
 
-    // Bitiş saati seçimi için TimePickerDialog
     val endTimePicker = remember {
         TimePickerDialog(
             context,
@@ -165,7 +144,6 @@ fun taskUpdateFormScreen(
     ) {
         Text(text = "Görevi Güncelle", fontSize = 22.sp, fontWeight = FontWeight.Bold)
 
-        // Görev Adı Girişi
         OutlinedTextField(
             value = taskName,
             onValueChange = { taskName = it },
@@ -174,7 +152,6 @@ fun taskUpdateFormScreen(
             modifier = Modifier.fillMaxWidth()
         )
 
-        // Başlangıç Saati Girişi (TimePicker tetiklenir)
         OutlinedTextField(
             value = startTime,
             onValueChange = {},
@@ -192,7 +169,6 @@ fun taskUpdateFormScreen(
             }
         )
 
-        // Bitiş Saati Girişi (TimePicker tetiklenir)
         OutlinedTextField(
             value = endTime,
             onValueChange = {},
@@ -210,7 +186,6 @@ fun taskUpdateFormScreen(
             }
         )
 
-        // Güncelle Butonu: Kullanıcı "Güncelle"ye tıklayarak güncel bilgileri gönderir.
         Button(
             onClick = {
                 if (taskName.isNotBlank()) {

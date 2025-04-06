@@ -73,9 +73,6 @@ fun TaskPopupScreen(
                 )
             },
             confirmButton = {
-                // Form içerisindeki "Kaydet" butonunu kullanmayıp,
-                // AlertDialog'un butonlarını tercih edebilirsiniz.
-                // Dilerseniz formun kendisindeki butonu iptal edip burayı kullanabilirsiniz.
             },
             dismissButton = {
                 Button(onClick = { showPopup = false }) {
@@ -112,17 +109,15 @@ fun TaskPopupScreen(
 
 @Composable
 fun taskFormScreen(
-    onSave: (Task) -> Unit // Kaydedilen görevi dışarıya döndüren callback
-): Task? {  // Fonksiyonun döndüreceği nesne türünü belirttik
-    // Form State'leri
+    onSave: (Task) -> Unit
+): Task? {
     var taskName by remember { mutableStateOf("") }
     var startTime by remember { mutableStateOf("00:00") }
     var endTime by remember { mutableStateOf("00:00") }
-    var task by remember { mutableStateOf<Task?>(null) } // Task nesnesini oluşturup saklamak için
+    var task by remember { mutableStateOf<Task?>(null) }
 
     val context = LocalContext.current
 
-    // Time Picker for Start Time
     val startTimePicker = remember {
         TimePickerDialog(
             context,
@@ -133,7 +128,6 @@ fun taskFormScreen(
         )
     }
 
-    // Time Picker for End Time
     val endTimePicker = remember {
         TimePickerDialog(
             context,
@@ -146,14 +140,12 @@ fun taskFormScreen(
 
     Column(
         modifier = Modifier
-            //.fillMaxSize()
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(text = "Yeni Görev Ekle", fontSize = 22.sp, fontWeight = FontWeight.Bold)
 
-        // Task Name Input
         OutlinedTextField(
             value = taskName,
             onValueChange = { taskName = it },
@@ -162,15 +154,14 @@ fun taskFormScreen(
             modifier = Modifier.fillMaxWidth()
         )
 
-        // Start Time Picker
         OutlinedTextField(
             value = startTime,
             onValueChange = {},
             label = { Text("Başlangıç Saati") },
-            readOnly = true, // Kullanıcı direkt olarak değiştiremesin
+            readOnly = true,
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable { startTimePicker.show() }, // Saat seçim penceresini aç
+                .clickable { startTimePicker.show() },
             trailingIcon = {
                 Icon(
                     imageVector = Icons.Default.AddCircle,
@@ -180,7 +171,6 @@ fun taskFormScreen(
             }
         )
 
-        // End Time Picker
         OutlinedTextField(
             value = endTime,
             onValueChange = {},
@@ -188,7 +178,7 @@ fun taskFormScreen(
             readOnly = true,
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable { endTimePicker.show() }, // Saat seçim penceresini aç
+                .clickable { endTimePicker.show() },
             trailingIcon = {
                 Icon(
                     imageVector = Icons.Default.AddCircle,
@@ -198,12 +188,11 @@ fun taskFormScreen(
             }
         )
 
-        // Kaydet Butonu
         Button(
             onClick = {
                 if (taskName.isNotBlank()) {
-                    task = Task(taskName, startTime, endTime) // Task nesnesini oluştur
-                    onSave(task!!) // Onaylanan task nesnesini döndür
+                    task = Task(taskName, startTime, endTime)
+                    onSave(task!!)
                 }
             },
             modifier = Modifier.fillMaxWidth()
@@ -212,5 +201,5 @@ fun taskFormScreen(
         }
     }
 
-    return task // Task nesnesini döndür
+    return task
 }
