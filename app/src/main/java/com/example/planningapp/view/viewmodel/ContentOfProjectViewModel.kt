@@ -40,6 +40,7 @@ class ContentOfProjectViewModel @Inject constructor(
             val projectId = projectId.toInt()
             getProjectHistory(projectId)
             getProjectTasks(projectId)
+            getProjectDescription(projectId)
         }
     }
 
@@ -51,6 +52,7 @@ class ContentOfProjectViewModel @Inject constructor(
             val projectId = projectId.toInt()
             getProjectHistory(projectId)
             getProjectTasks(projectId)
+            getProjectDescription(projectId)
         }
     }
 
