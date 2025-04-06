@@ -3,8 +3,10 @@ package com.example.planningapp.view.viewmodel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import com.example.planningapp.data.entity.project.ProjectDescription
 import com.example.planningapp.data.entity.project.ProjectHistory
 import com.example.planningapp.data.entity.project.ProjectTask
+import com.example.planningapp.data.repository.project.ProjectDescriptionRepository
 import com.example.planningapp.data.repository.project.ProjectHistoryRepository
 import com.example.planningapp.data.repository.project.ProjectTaskRepository
 import com.example.planningapp.data.repository.project.ProjectTaskResourceRepository
@@ -19,13 +21,15 @@ class ContentOfProjectViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val projectHistoryRepository: ProjectHistoryRepository,
     private val projectTaskRepository: ProjectTaskRepository,
-    private val projectTaskResourceRepository: ProjectTaskResourceRepository
+    private val projectTaskResourceRepository: ProjectTaskResourceRepository,
+    private val projectDescriptionRepository: ProjectDescriptionRepository
 ) : ViewModel()
 {
     val projectId: String? = savedStateHandle["projectId"]
 
     val history = MutableLiveData<List<ProjectHistory>>()
     val tasks = MutableLiveData<List<ProjectTask>>()
+    val projectDescription = MutableLiveData<ProjectDescription>()
 
     init
     {
@@ -64,6 +68,12 @@ class ContentOfProjectViewModel @Inject constructor(
         }
     }
 
+    private fun getProjectDescription(projectId: Int) {
+        CoroutineScope(Dispatchers.Main).launch {
+            projectDescription.value = projectDescriptionRepository.getProjectDescription(projectId)
+        }
+    }
+
     fun insertProjectHistory(newHistory: ProjectHistory)
     {
         CoroutineScope(Dispatchers.Main).launch {
@@ -78,6 +88,12 @@ class ContentOfProjectViewModel @Inject constructor(
         }
     }
 
+    fun insertProjectDescription(projectId: Int, description: String) {
+        CoroutineScope(Dispatchers.Main).launch {
+            projectDescriptionRepository.insertProjectDescription(projectId, description)
+        }
+    }
+
     fun deleteProjectHistory(projectHistoryId: Int)
     {
         CoroutineScope(Dispatchers.Main).launch {
@@ -89,6 +105,18 @@ class ContentOfProjectViewModel @Inject constructor(
     {
         CoroutineScope(Dispatchers.Main).launch {
             projectTaskRepository.deleteProjectTask(projectTaskId)
+        }
+    }
+
+    fun deleteProjectDescription(projectDescriptionId: Int) {
+        CoroutineScope(Dispatchers.Main).launch {
+            projectDescriptionRepository.deleteProjectDescription(projectDescriptionId)
+        }
+    }
+
+    fun updateProjectDescription(projectDescriptionId: Int, description: String) {
+        CoroutineScope(Dispatchers.Main).launch {
+            projectDescriptionRepository.updateProjectDescription(projectDescriptionId, description)
         }
     }
 }
