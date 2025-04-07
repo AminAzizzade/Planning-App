@@ -1,17 +1,15 @@
 package com.example.planningapp.view.partialview.general
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Icon
@@ -29,7 +27,6 @@ import androidx.navigation.NavHostController
 import com.example.planningapp.ui.theme.backgroundColor
 import com.example.planningapp.ui.theme.focusedColor
 import com.example.planningapp.ui.theme.mainColor
-import com.example.planningapp.ui.theme.unfocusedColor
 
 data class IconItem(
     val imageVector: ImageVector,
@@ -55,14 +52,13 @@ fun IconList(
             destination = "home"
         ),
         IconItem(
-            imageVector = Icons.Default.Build,
+            imageVector = Icons.Default.Check,
             contentDescription = "Build",
-            destination = "calendar"
+            destination = "check"
         )
     )
 
     var selectedIndex by remember { mutableIntStateOf(index) }
-    Log.e("selectedIndex", selectedIndex.toString())
 
     LazyRow(
         modifier = Modifier

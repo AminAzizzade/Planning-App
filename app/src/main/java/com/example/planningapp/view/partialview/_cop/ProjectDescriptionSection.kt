@@ -20,12 +20,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.example.planningapp.data.entity.project.ProjectDescription
 
 @Composable
 fun ProjectDescriptionSection(
-    description: String,
+    projectDescription: ProjectDescription,
     onEditClick: () -> Unit
 ) {
+    val description = projectDescription.description
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -33,7 +35,7 @@ fun ProjectDescriptionSection(
             .padding(16.dp)
             .background(Color.White, shape = RoundedCornerShape(8.dp))
     ) {
-        // Scrollable metin alanı
+
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -46,7 +48,7 @@ fun ProjectDescriptionSection(
                 color = if (description.isNotBlank()) Color.Black else Color.Gray
             )
         }
-        // Düzenleme ikonu, tıklandığında onEditClick callback'ini tetikler
+
         IconButton(
             onClick = onEditClick,
             modifier = Modifier.align(Alignment.TopEnd)

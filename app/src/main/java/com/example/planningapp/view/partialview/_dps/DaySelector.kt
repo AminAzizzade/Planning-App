@@ -32,35 +32,24 @@ fun DaySelector(
     selectedDay: Int,
     onDaySelected: (Int) -> Unit
 ) {
-    // Scroll state ile yatay kaydırma kontrolü sağlanır.
     val scrollState = rememberScrollState()
-    // Ayın tüm günlerini içeren liste (örneğin, 1'den 31'e kadar)
     val days = List(lastDayOfMonth) { it + 1 }
 
-    // Ekran genişliği ve öğe ölçüleri için density ve configuration bilgilerini alıyoruz.
     val configuration = LocalConfiguration.current
     val density = LocalDensity.current
-    // Ekran genişliğini piksele çeviriyoruz.
     val screenWidthPx = with(density) { configuration.screenWidthDp.dp.toPx() }
-    // Her gün öğesi 50.dp genişliğinde ve aralarında 8.dp boşluk olduğunu varsayıyoruz.
     val itemWidth = 50.dp
     val spacing = 8.dp
     val itemWidthPx = with(density) { itemWidth.toPx() }
     val spacingPx = with(density) { spacing.toPx() }
 
-    // Seçili gün değiştiğinde, ilgili öğeyi ortalamak için kaydırma animasyonu gerçekleştiriliyor.
     LaunchedEffect(selectedDay) {
-        // Seçili günün listede indeksi (0'dan başlayan)
         val index = selectedDay - 1
-        // Öğenin sol kenarından itibaren konumu: her öğe itemWidth + spacing kadar yer kaplıyor.
-        // Öğenin merkezinin konumu: index * (itemWidth + spacing) + itemWidth / 2.
-        // Bu değerden ekranın yarısını çıkartarak öğeyi ortalamayı sağlıyoruz.
         val targetOffset =
             (index * (itemWidthPx + spacingPx) + itemWidthPx / 2 - screenWidthPx / 2).toInt().coerceAtLeast(0)
         scrollState.animateScrollTo(targetOffset)
     }
 
-    // Kaydırılabilir satır (Row) oluşturuluyor.
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -70,7 +59,6 @@ fun DaySelector(
         ,
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement
-            //.SpaceEvenly
             .spacedBy(spacing)
     ) {
         days.forEach { day ->

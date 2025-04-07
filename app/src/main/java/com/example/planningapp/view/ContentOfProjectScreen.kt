@@ -1,8 +1,6 @@
 package com.example.planningapp.view
 
-import android.util.Log
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -20,7 +18,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -72,22 +69,23 @@ fun ContentOfProjectScreen(
     projectId: Int,
     navController: NavHostController
 ) {
-    val history by viewModel.history.observeAsState(initial = emptyList())
-    val task by viewModel.tasks.observeAsState(initial = emptyList())
+    val history            by viewModel.history.observeAsState(initial = emptyList())
+    val task               by viewModel.tasks.observeAsState(initial = emptyList())
+    val projectDescription by viewModel.projectDescription.observeAsState(initial = null)
 
     var historyController by remember { mutableIntStateOf(0) }
     var taskController by remember { mutableIntStateOf(0) }
+    var descriptionController by remember { mutableIntStateOf(0) }
 
     LaunchedEffect(historyController) { viewModel.resetViewModel() }
     LaunchedEffect(taskController) { viewModel.resetViewModel() }
+    LaunchedEffect(descriptionController) { viewModel.resetViewModel() }
 
     var selectList by remember { mutableStateOf("history") }
 
     var showHistoryPopUp by remember { mutableStateOf(false) }
     var showTaskPopUp by remember { mutableStateOf(false) }
     var showDescriptionPopup by remember { mutableStateOf(false) }
-
-    var description by remember { mutableStateOf("") }
 
     val containerColor = containerColor
     val focusedColor = focusedColor
@@ -115,10 +113,12 @@ fun ContentOfProjectScreen(
 
                 NormalTextView(text = "Project Name", color = textColor)
 
-                ProjectDescriptionSection(
-                    description = description,
-                    onEditClick = { showDescriptionPopup = true }
-                )
+                projectDescription?.let {
+                    ProjectDescriptionSection(
+                        projectDescription = it,
+                        onEditClick = { showDescriptionPopup = true }
+                    )
+                }
             }
 
             SelectionTab(
@@ -172,13 +172,23 @@ fun ContentOfProjectScreen(
                 )
             }
             if (showDescriptionPopup) {
-                ProjectDescriptionPopup(
-                    currentDescription = description,
-                    onDismiss = { showDescriptionPopup = false },
-                    onDescriptionUpdated = { updatedDesc ->
-                        description = updatedDesc
-                    }
-                )
+                projectDescription?.let {
+                    ProjectDescriptionPopup(
+                        currentDescription = it.description,
+                        onDismiss = { showDescriptionPopup = false },
+
+                        onDescriptionUpdated = { updatedDesc ->
+
+                            viewModel.updateProjectDescription(
+                                projectDescriptionId = it.projectDescriptionId,
+                                description = updatedDesc
+                            )
+
+                            descriptionController++
+
+                        }
+                    )
+                }
             }
         }
     }
@@ -276,8 +286,8 @@ fun TabButton(
 @Composable
 fun HistoryAndTaskList(
     selectList: String,
-    history: List<ProjectHistory>, // History elemanlarının tipini belirtmelisin
-    task: List<ProjectTask>,       // Task elemanlarının tipini belirtmelisin
+    history: List<ProjectHistory>,
+    task: List<ProjectTask>,
     onHistoryDelete: (projectHistoryId: Int) -> Unit,
     onTaskDelete: (projectTaskId: Int) -> Unit,
     historyObjectColor: Color,

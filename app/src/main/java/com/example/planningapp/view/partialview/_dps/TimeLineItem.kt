@@ -138,12 +138,10 @@ fun TimelineItem(
     val startTimeText = TimeConverterService.convert(startTimeInt)
     val endTimeText = TimeConverterService.convert(event.endTime)
 
-    // Boyutlandırma ayarları
     val taskHeight = if (isNextTask) 150.dp else 120.dp
     val taskWidthFactor = if (isNextTask) 0.9F else 0.85F
     val shadowElevation = if (isNextTask) 24.dp else 0.dp
 
-    // Sıradaki göreve ait zaman bilgisini güncellemek için state
     var currentTimeSec by remember { mutableLongStateOf(getSecondsSinceMidnight()) }
     if (isNextTask) {
         LaunchedEffect(Unit) {
@@ -154,7 +152,6 @@ fun TimelineItem(
         }
     }
 
-    // Dialog durumlarını kontrol eden state'ler
     var showOptionsDialog by remember { mutableStateOf(false) }
     var showUpdateDialog by remember { mutableStateOf(false) }
 
@@ -164,7 +161,6 @@ fun TimelineItem(
     ) {
         ColoredLeftBar()
 
-        // Görev kartı: uzun basıldığında seçenekler menüsü açılır, navigasyon ok ikonu ile yapılır.
         Box(
             modifier = Modifier
                 .fillMaxWidth(taskWidthFactor)
@@ -191,7 +187,6 @@ fun TimelineItem(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Zaman bilgilerini gösteren bölüm
                 Column(
                     modifier = Modifier
                         .fillMaxHeight()
@@ -202,10 +197,8 @@ fun TimelineItem(
                     TimeTextView(endTimeText)
                 }
 
-                // Görev adını gösteren bölüm
                 ContainerTextView(event.taskName)
 
-                // Overlay ve navigasyon ok ikonu
                 Column(
                     modifier = Modifier
                         .fillMaxHeight()
