@@ -3,6 +3,7 @@ package com.example.planningapp.view
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -257,7 +258,6 @@ fun TabButton(
         animationSpec = tween(100),
         label = "alpha"
     )
-
     Box(
         modifier = Modifier
             .fillMaxWidth(size)
@@ -267,7 +267,7 @@ fun TabButton(
             .background(backgroundColor, shape = RoundedCornerShape(12.dp))
             .clickable(
                 interactionSource = interactionSource,
-                indication = rememberRipple(bounded = true, color = Color.Gray),
+                indication = LocalIndication.current,
                 onClick = onClick
             ),
         contentAlignment = Alignment.Center

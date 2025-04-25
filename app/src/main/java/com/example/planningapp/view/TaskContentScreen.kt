@@ -27,6 +27,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.ExposedDropdownMenuDefaults.outlinedTextFieldColors
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -146,7 +147,7 @@ fun TaskContentScreen(
                     .padding(16.dp)
                 ,
                 shape = RoundedCornerShape(16.dp),
-                colors = TextFieldDefaults.outlinedTextFieldColors(
+                colors = outlinedTextFieldColors(
                     focusedBorderColor = mainColor,
                     unfocusedBorderColor = textColor
                 ),
@@ -180,7 +181,7 @@ fun TaskContentScreen(
                         .fillMaxWidth()
                         .padding(12.dp),
                     shape = shape2,
-                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                    colors = outlinedTextFieldColors(
                         focusedBorderColor = mainColor,
                         unfocusedBorderColor = textColor
                     )

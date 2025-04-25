@@ -1,3 +1,5 @@
+.idea
+.vscode
 node_modules/
 dist/
 vendor/
@@ -8,6 +10,4 @@ cache/
 *.spec.*
 *.bundle.*
 *.bundle-min.*
-*.*.js
-*.*.ts
 *.log

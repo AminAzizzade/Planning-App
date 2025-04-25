@@ -1,6 +1,8 @@
 package com.example.planningapp.view.partialview._dps
 
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -61,6 +63,7 @@ private fun ColoredLeftBar() {
     )
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 fun getSecondsSinceMidnight(): Long {
     return LocalTime.now(ZoneId.systemDefault()).toSecondOfDay().toLong()
 }
@@ -125,6 +128,7 @@ fun TaskOptionsDialog(
     )
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TimelineItem(
