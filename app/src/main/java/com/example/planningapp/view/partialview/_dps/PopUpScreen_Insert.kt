@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material3.AlertDialog
@@ -84,9 +83,8 @@ fun TaskPopupScreen(
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .fillMaxSize(0.5F)
+            .fillMaxSize(0.4F)
             .background(Color.White)
-            .padding(16.dp),
     ){
         IconButton(
             modifier = Modifier
@@ -96,7 +94,7 @@ fun TaskPopupScreen(
         )
         {
             Icon(
-                modifier = Modifier.size(60.dp),
+                modifier = Modifier.fillMaxSize(),
                 imageVector = Icons.Default.AddCircle,
                 contentDescription = "Add Task",
                 tint = mainColor

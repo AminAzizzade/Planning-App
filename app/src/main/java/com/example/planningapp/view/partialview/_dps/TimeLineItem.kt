@@ -44,9 +44,11 @@ import com.example.planningapp.service.TimeConverterService
 import com.example.planningapp.ui.theme.containerColor
 import com.example.planningapp.ui.theme.focusedColor
 import com.example.planningapp.ui.theme.mainColor
+import com.example.planningapp.ui.theme.timeTextColor_beta
 import com.example.planningapp.view.partialview.general.ContainerTextView
 import com.example.planningapp.view.partialview.general.HoursTextView
 import com.example.planningapp.view.partialview.general.TimeTextView
+import com.example.planningapp.view.partialview.general.textColor_beta
 import com.example.planningapp.view.viewmodel.DailyPlanningViewModel
 import kotlinx.coroutines.delay
 import java.time.LocalTime
@@ -82,7 +84,7 @@ private fun calculateOverlayText(
         val hours = remainingSec / 3600
         val minutes = (remainingSec % 3600) / 60
         if (hours > 0)
-            "${hours}h ${if (minutes < 10) "0" else ""}${minutes}min left"
+            "${hours}h ${if (minutes < 10) "0" else ""}${minutes}min"
         else
             "${minutes}min left"
     }
@@ -145,6 +147,7 @@ fun TimelineItem(
     val taskHeight = if (isNextTask) 150.dp else 120.dp
     val taskWidthFactor = if (isNextTask) 0.9F else 0.85F
     val shadowElevation = if (isNextTask) 24.dp else 0.dp
+    val cornerRadius = if (isNextTask) 20.dp else 36.dp
 
     var currentTimeSec by remember { mutableLongStateOf(getSecondsSinceMidnight()) }
     if (isNextTask) {
@@ -171,12 +174,12 @@ fun TimelineItem(
                 .height(taskHeight)
                 .shadow(
                     elevation = shadowElevation,
-                    shape = RoundedCornerShape(12.dp),
+                    shape = RoundedCornerShape(cornerRadius),
                     clip = false
                 )
                 .background(
-                    color = Color(containerColor.value),
-                    shape = RoundedCornerShape(12.dp)
+                    color = if (isNextTask) Color.White else Color(containerColor.value),
+                    shape = RoundedCornerShape(cornerRadius)
                 )
                 .combinedClickable(
                     onClick = { /* Navigasyon ok ikonu ile yapılacak */ },
@@ -197,11 +200,22 @@ fun TimelineItem(
                         .padding(8.dp),
                     verticalArrangement = Arrangement.SpaceAround
                 ) {
-                    TimeTextView(startTimeText)
-                    TimeTextView(endTimeText)
+                    TimeTextView(
+                        startTimeText,
+                        timeTextColor = if (isNextTask) focusedColor else timeTextColor_beta
+                    )
+                    TimeTextView(
+                        endTimeText,
+                        timeTextColor = if (isNextTask) focusedColor else timeTextColor_beta
+                    )
                 }
 
-                ContainerTextView(event.taskName)
+                ContainerTextView(
+                    event.taskName,
+                    modifier = Modifier
+                        .fillMaxWidth(0.55F),
+                    textColor = if (isNextTask) focusedColor else textColor_beta
+                )
 
                 Column(
                     modifier = Modifier
@@ -217,10 +231,15 @@ fun TimelineItem(
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                         contentDescription = "Navigate to task content",
-                        modifier = Modifier.clickable {
+                        modifier = Modifier
+                            //.background(Color.Red)
+                            .fillMaxHeight(0.35F)
+                            .fillMaxWidth(0.6F)
+                            .clickable {
                             navController.navigate("content/${event.taskID}")
                         },
-                        tint = focusedColor
+                        tint = if (isNextTask) focusedColor else timeTextColor_beta
+                        //tint = mainColor
                     )
                 }
             }
@@ -233,7 +252,7 @@ fun TimelineItem(
             onDelete = {
                 viewModel.deleteTimeLineTask(event.taskID)
                 onChange()
-                       },
+            },
             onUpdate = { showUpdateDialog = true }
         )
     }

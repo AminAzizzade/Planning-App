@@ -6,19 +6,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
-import com.example.planningapp.ui.theme.focusedColor
 import com.example.planningapp.ui.theme.fontFamily
 import com.example.planningapp.ui.theme.textColor
+import com.example.planningapp.ui.theme.timeTextColor_beta
 import com.example.planningapp.ui.theme.unfocusedColor
 
 @Composable
-fun TimeTextView(time: String)
+fun TimeTextView(
+    time: String,
+
+    timeTextColor: Color = timeTextColor_beta
+    )
 {
     Text(
         text = time,
-        color = focusedColor,
+        color = timeTextColor,
         fontSize = 18.sp,
         fontWeight = FontWeight.ExtraBold,
         fontFamily = FontFamily.Monospace,
@@ -37,15 +42,26 @@ fun HoursTextView(time: String)
     )
 }
 
+//val testColor_beta = Color(0xFFb9b8e1)
+val textColor_beta = Color(0xFFb3b5de)
+
 @Composable
-fun ContainerTextView(text: String)
+fun ContainerTextView(
+    text: String,
+
+    modifier: Modifier = Modifier,
+    textColor: Color = textColor_beta
+)
 {
     Text(
+        modifier = modifier,
         text = text,
+        //color = textColor,
         color = textColor,
-        fontSize = 24.sp,
+        fontSize = 20.sp,
         fontFamily = fontFamily,
-        fontWeight = FontWeight.W500
+        fontWeight = FontWeight.W600,
+        textAlign = TextAlign.Center
     )
 }
 
