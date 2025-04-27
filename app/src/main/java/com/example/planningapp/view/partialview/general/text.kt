@@ -5,10 +5,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle.Companion.Italic
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
+import com.example.planningapp.ui.theme.focusedColor
+import com.example.planningapp.ui.theme.focusedColorOpacity
 import com.example.planningapp.ui.theme.fontFamily
 import com.example.planningapp.ui.theme.textColor
 import com.example.planningapp.ui.theme.timeTextColor_beta
@@ -50,7 +54,7 @@ fun ContainerTextView(
     text: String,
 
     modifier: Modifier = Modifier,
-    textColor: Color = textColor_beta
+    textColor: Color = focusedColor
 )
 {
     Text(
@@ -61,6 +65,25 @@ fun ContainerTextView(
         fontSize = 20.sp,
         fontFamily = fontFamily,
         fontWeight = FontWeight.W600,
+        textAlign = TextAlign.Center
+    )
+}
+
+@Composable
+fun ContainerTextView_Checked(
+    text: String,
+    modifier: Modifier = Modifier,
+    textColor: Color = focusedColorOpacity
+) {
+    Text(
+        modifier = modifier,
+        text = text,
+        color = textColor,
+        fontSize = 20.sp,
+        fontFamily = fontFamily,
+        fontWeight = FontWeight.W600,
+        //fontStyle = Italic,                    // Italic
+        textDecoration = TextDecoration.LineThrough,      // Üstü çizili
         textAlign = TextAlign.Center
     )
 }

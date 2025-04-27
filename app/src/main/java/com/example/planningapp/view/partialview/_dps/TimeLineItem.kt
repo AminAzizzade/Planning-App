@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -224,24 +225,34 @@ fun TimelineItem(
                     verticalArrangement = Arrangement.SpaceAround,
                     horizontalAlignment = Alignment.End
                 ) {
-                    if (isNextTask) {
+                    if (isNextTask)
+                    {
                         val overlayText = calculateOverlayText(currentTimeSec, startTimeInt)
                         HoursTextView(overlayText)
                     }
+
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                         contentDescription = "Navigate to task content",
                         modifier = Modifier
-                            //.background(Color.Red)
                             .fillMaxHeight(0.35F)
                             .fillMaxWidth(0.6F)
                             .clickable {
                             navController.navigate("content/${event.taskID}")
                         },
                         tint = if (isNextTask) focusedColor else timeTextColor_beta
-                        //tint = mainColor
                     )
+
+                    if (isNextTask) {
+                        Spacer(
+                            modifier = Modifier
+                                .height(18.dp)
+                                .width(8.dp)
+                        )
+                    }
                 }
+
+
             }
         }
     }
