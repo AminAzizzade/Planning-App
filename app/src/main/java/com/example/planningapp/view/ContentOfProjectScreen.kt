@@ -281,7 +281,13 @@ fun TabButton(
     }
 }
 
-
+/*
+    Proje ile ilgili yeni fikirler
+    History kısmı
+        biten görevler
+        yeni haberler
+    olarak ta ayrılabilir
+ */
 
 @Composable
 fun HistoryAndTaskList(
