@@ -55,6 +55,31 @@ import kotlinx.coroutines.delay
 import java.time.LocalTime
 import java.time.ZoneId
 
+enum class TextColor(val value: Int, val color: Color) {
+    IS_CANCELLED(-2, Color.White),
+    IS_BEFORE(-1, timeTextColor_beta),
+    IS_NEXT(0, focusedColor),
+    IS_AFTER(1, timeTextColor_beta),
+    ;
+
+    companion object {
+        fun getColorFor(value: Int, default: Color = Color.Gray): Color =
+            TextColor.entries.firstOrNull { it.value == value }?.color ?: default
+    }
+}
+
+enum class BackGroundColor(val value: Int, val color: Color) {
+    IS_CANCELLED(-2, Color.Red),
+    IS_BEFORE(-1, containerColor),
+    IS_NEXT(0, Color.White),
+    IS_AFTER(1, containerColor),
+    ;
+
+    companion object {
+        fun getColorFor(value: Int, default: Color = Color.Gray): Color =
+            BackGroundColor.entries.firstOrNull { it.value == value }?.color ?: default
+    }
+}
 
 @Composable
 private fun ColoredLeftBar() {
@@ -140,15 +165,20 @@ fun TimelineItem(
     navController: NavHostController,
     isNextTask: Boolean = false,
     onChange: () -> Unit,
+    status: Int
 ) {
     val startTimeInt = event.startTime
     val startTimeText = TimeConverterService.convert(startTimeInt)
+
     val endTimeText = TimeConverterService.convert(event.endTime)
 
     val taskHeight = if (isNextTask) 150.dp else 120.dp
     val taskWidthFactor = if (isNextTask) 0.9F else 0.85F
     val shadowElevation = if (isNextTask) 24.dp else 0.dp
     val cornerRadius = if (isNextTask) 20.dp else 36.dp
+
+    val textColor = TextColor.getColorFor(status)
+    val containerColor = BackGroundColor.getColorFor(status)
 
     var currentTimeSec by remember { mutableLongStateOf(getSecondsSinceMidnight()) }
     if (isNextTask) {
@@ -179,7 +209,7 @@ fun TimelineItem(
                     clip = false
                 )
                 .background(
-                    color = if (isNextTask) Color.White else Color(containerColor.value),
+                    color = containerColor,
                     shape = RoundedCornerShape(cornerRadius)
                 )
                 .combinedClickable(
@@ -205,11 +235,11 @@ fun TimelineItem(
                 ) {
                     TimeTextView(
                         startTimeText,
-                        timeTextColor = if (isNextTask) focusedColor else timeTextColor_beta
+                        timeTextColor = textColor
                     )
                     TimeTextView(
                         endTimeText,
-                        timeTextColor = if (isNextTask) focusedColor else timeTextColor_beta
+                        timeTextColor = textColor
                     )
                 }
 
@@ -217,7 +247,7 @@ fun TimelineItem(
                     event.taskName,
                     modifier = Modifier
                         .fillMaxWidth(0.55F),
-                    textColor = if (isNextTask) focusedColor else textColor_beta
+                    textColor = textColor
                 )
 
                 Column(
