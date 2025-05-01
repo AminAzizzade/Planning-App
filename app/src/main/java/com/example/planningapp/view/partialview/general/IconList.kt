@@ -21,12 +21,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.planningapp.ui.theme.backgroundColor
+import com.example.planningapp.ui.theme.containerColor
 import com.example.planningapp.ui.theme.focusedColor
 import com.example.planningapp.ui.theme.mainColor
+import com.example.planningapp.ui.theme.mainColorOpacity
+import com.example.planningapp.ui.theme.timeTextColor_beta
 
 data class IconItem(
     val imageVector: ImageVector,
@@ -81,6 +85,10 @@ fun IconList(
     }
 }
 
+val unfocusedColor_beta = Color(0x88cfcfe6)
+val unfocusedColor_beta1 = Color(0xFFcfcfe6)
+val unfocusedColor_beta2 = Color(0xAAcdccea)
+
 @Composable
 fun IconItem(
     index: Int,
@@ -103,7 +111,7 @@ fun IconItem(
             ,
             imageVector = iconItem.imageVector,
             contentDescription = iconItem.contentDescription,
-            tint = if (selectedIndex == index) focusedColor else mainColor
+            tint = if (selectedIndex == index) mainColor else mainColorOpacity
         )
     }
 }

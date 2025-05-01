@@ -1,5 +1,7 @@
 package com.example.planningapp.view.partialview._dps
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -26,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import com.example.planningapp.ui.theme.backgroundColor
 import com.example.planningapp.ui.theme.mainColor
 
+@RequiresApi(Build.VERSION_CODES.HONEYCOMB_MR2)
 @Composable
 fun DaySelector(
     lastDayOfMonth: Int,

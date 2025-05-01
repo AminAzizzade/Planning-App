@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -22,6 +23,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowForward
@@ -83,7 +86,7 @@ fun CalendarScreen(
             with(density) {
                 val itemHeightPx = 48.dp.toPx()
                 val containerHeightPx = 200.dp.toPx()
-                val index = Month.values().indexOf(currentMonth.month)
+                val index = Month.entries.indexOf(currentMonth.month)
                 val scrollPosition =
                     (index * itemHeightPx - containerHeightPx / 2 + itemHeightPx / 2)
                         .toInt()
@@ -110,7 +113,7 @@ fun CalendarScreen(
 
     Column(
         modifier = Modifier
-            .fillMaxSize()
+            //.fillMaxSize()
             .background(backgroundColor)
     ) {
         CalendarHeader(
@@ -144,6 +147,8 @@ fun CalendarScreen(
                 )
             }
         )
+
+        Spacer(modifier = Modifier.fillMaxHeight(0.05F))
 
         DaysOfWeekRow()
 
@@ -195,7 +200,7 @@ fun CalendarHeader(
         verticalAlignment = Alignment.CenterVertically
     ) {
         NavigationButton(
-            imageVector = Icons.Filled.ArrowBack,
+            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
             contentDescription = "Önceki ay",
             onClick = onPreviousClick
         )
@@ -250,7 +255,7 @@ fun CalendarHeader(
             }
         }
         NavigationButton(
-            imageVector = Icons.Filled.ArrowForward,
+            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
             contentDescription = "Sonraki ay",
             onClick = onNextClick
         )
@@ -279,7 +284,7 @@ fun MonthDropdown(
                     .verticalScroll(scrollState)
                     .padding(4.dp)
             ) {
-                Month.values().forEach { month ->
+                Month.entries.forEach { month ->
                     val isSelected = month == currentMonth.month
                     DropdownMenuItem(
                         modifier = if (isSelected) Modifier.background(
@@ -383,7 +388,7 @@ fun CalendarGrid(
     val firstDayOfMonth = currentMonth.atDay(1).dayOfWeek.value
     // currentMonth'e bağlı olarak listeyi hesaplıyoruz; boş hücreler de dahil.
     val daysList = remember(currentMonth) {
-        (1..(daysInMonth + firstDayOfMonth - 1)).map { index ->
+        (1..<daysInMonth + firstDayOfMonth).map { index ->
             if (index < firstDayOfMonth) null else index - firstDayOfMonth + 1
         }
     }
@@ -428,7 +433,7 @@ fun ResponsiveDayCell(
         Box(
             modifier = Modifier
                 .size(cellSize)
-                .padding(4.dp)
+                .padding(3.dp)
                 .background(
                     color = when {
                         day == null -> Color.Transparent

@@ -42,8 +42,12 @@ val provider = GoogleFont.Provider(
     certificates = R.array.com_google_android_gms_fonts_certs
 )
 
-val fontName = GoogleFont("Roboto")
+val fontName = GoogleFont("Inter")
+val fontName1 = GoogleFont("Nunito")
+val fontName2 = GoogleFont("Sansation")
+val fontName3 = GoogleFont("Josefin Sans")
+val fontName4 = GoogleFont("Exo 2")
 
 val fontFamily = FontFamily(
-    Font(googleFont = fontName, fontProvider = provider)
+    Font(googleFont = fontName4, fontProvider = provider)
 )
