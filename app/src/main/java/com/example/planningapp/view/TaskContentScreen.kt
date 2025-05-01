@@ -1,9 +1,6 @@
 package com.example.planningapp.view
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,21 +14,17 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -40,10 +33,11 @@ import androidx.compose.material3.ExposedDropdownMenuDefaults.outlinedTextFieldC
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuItemColors
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -55,27 +49,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavHostController
 import com.example.planningapp.data.entity.CheckBoxMission
 import com.example.planningapp.data.entity.TaskContent
 import com.example.planningapp.data.entity.TaskLabel
 import com.example.planningapp.ui.theme.containerColor
 import com.example.planningapp.ui.theme.mainColor
-import com.example.planningapp.view.partialview.general.ContainerTextView
-import com.example.planningapp.view.partialview.general.textColor_beta
-import com.example.planningapp.view.viewmodel.ContentOfTaskViewModel
-import androidx.compose.material3.MenuItemColors
-import androidx.compose.ui.input.pointer.pointerInput
 import com.example.planningapp.view.partialview._tcs.MissionInput
 import com.example.planningapp.view.partialview._tcs.MissionList
-import com.example.planningapp.view.partialview.general.ContainerTextView_Checked
+import com.example.planningapp.view.partialview.general.textColor_beta
+import com.example.planningapp.view.viewmodel.ContentOfTaskViewModel
 
 /**
  * TaskContentScreen: Ana ekran
@@ -262,78 +249,130 @@ fun EmptyDataView(onAddClick: () -> Unit) {
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NoteInputField(
     note: String,
     onNoteChange: (String) -> Unit
 ) {
-    var isFocused by remember { mutableStateOf(false) }
-    var focusedColor = mainColor
-    var unfocusedColor = textColor_beta
+    var showEditor by remember { mutableStateOf(false) }
+    val scrollState = rememberScrollState()
 
-    OutlinedTextField(
-        value = note,
-
-        onValueChange = {
-            if (it.length <= 250) onNoteChange(it)
-        },
-
+    Box(
         modifier = Modifier
+            //.height(100.dp)
             .fillMaxWidth()
             .padding(horizontal = 32.dp)
-            .onFocusChanged { isFocused = it.isFocused },
-
-        label = { Text("Note") },
-
-        leadingIcon = {
-            Icon(
-                imageVector = Icons.Default.Edit,
-                contentDescription = null,
-                tint = if (isFocused) mainColor else textColor_beta
-
-            )
-        },
-
-        trailingIcon = {
-            if (note.isNotEmpty()) {
-                IconButton(onClick = { onNoteChange("") }) {
+    ) {
+        // ➊ Sabit yükseklikli, iç scroll’lu alan
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()         // önizlemenin yüksekliği
+                .verticalScroll(scrollState)  // uzun metni içe kaydır
+        ) {
+            OutlinedTextField(
+                value = note,
+                onValueChange = {},       // readOnly
+                readOnly = true,
+                modifier = Modifier.fillMaxSize(),
+                label = { Text("Note") },
+                trailingIcon = {
                     Icon(
-                        imageVector = Icons.Default.Close,
-                        contentDescription = "Clear",
-                        tint = if (isFocused) mainColor else textColor_beta
+                        imageVector = Icons.Default.Edit,
+                        contentDescription = "Edit note",
+                        tint = mainColor
                     )
+                },
+                shape = RoundedCornerShape(16.dp),
+                colors = outlinedTextFieldColors(
+                    disabledTextColor      = textColor_beta,
+                    unfocusedBorderColor   = textColor_beta,
+                    unfocusedLabelColor    = textColor_beta
+                ),
+                singleLine = true,
+            )
+        }
+
+        Box(
+            modifier = Modifier
+                .matchParentSize()
+                .pointerInput(Unit) {
+                    detectTapGestures { showEditor = true }
+                }
+        )
+    }
+
+    if (showEditor) {
+        FullScreenNoteEditor(
+            initialText = note,
+            onDismiss   = { showEditor = false },
+            onSave      = {
+                onNoteChange(it)
+                showEditor = false
+            }
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun FullScreenNoteEditor(
+    initialText: String,
+    onDismiss: () -> Unit,
+    onSave: (String) -> Unit
+) {
+    var tempText by remember { mutableStateOf(initialText) }
+
+    Dialog(onDismissRequest = onDismiss) {
+        Surface(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            shape = RoundedCornerShape(12.dp),
+            color = Color.White,
+            tonalElevation = 4.dp
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)
+            ) {
+                Text("Not Düzenle", style = MaterialTheme.typography.titleMedium)
+                Spacer(Modifier.height(12.dp))
+                OutlinedTextField(
+                    value = tempText,
+                    onValueChange = {
+                        if (it.length <= 250) tempText = it
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                    placeholder = { Text("Notunuzu buraya yazın...") },
+                    maxLines = 20,
+                    shape = RoundedCornerShape(8.dp),
+                    colors = outlinedTextFieldColors(
+                        focusedBorderColor = mainColor,
+                        cursorColor        = mainColor
+                    )
+                )
+                Spacer(Modifier.height(12.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    TextButton(onClick = onDismiss) {
+                        Text("İptal")
+                    }
+                    Spacer(Modifier.width(8.dp))
+                    TextButton(onClick = { onSave(tempText) }) {
+                        Text("Kaydet")
+                    }
                 }
             }
-        },
-
-        supportingText = {
-            Text(
-                text = "${note.length} / 250",
-                modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.End,
-                fontSize = 12.sp,
-                color = if (isFocused) mainColor else textColor_beta
-            )
-        },
-
-        shape = RoundedCornerShape(16.dp),
-
-        colors = outlinedTextFieldColors(
-            focusedBorderColor    = focusedColor,
-            unfocusedBorderColor  = unfocusedColor,
-            focusedLabelColor     = focusedColor,
-            unfocusedLabelColor   = unfocusedColor,
-            cursorColor           = focusedColor,
-            focusedLeadingIconColor   = focusedColor,
-            unfocusedLeadingIconColor = unfocusedColor,
-            focusedTrailingIconColor  = focusedColor,
-            unfocusedTrailingIconColor= unfocusedColor,
-        ),
-        singleLine = false,
-        maxLines = 5
-    )
+        }
+    }
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
