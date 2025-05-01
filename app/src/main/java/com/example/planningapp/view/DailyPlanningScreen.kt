@@ -1,6 +1,8 @@
 package com.example.planningapp.view
 
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -30,6 +32,7 @@ import com.example.planningapp.view.partialview._dps.DaySelector
 import com.example.planningapp.view.partialview._dps.TaskPopupScreen
 import com.example.planningapp.view.partialview._dps.TimelineItem
 import com.example.planningapp.view.viewmodel.DailyPlanningViewModel
+import java.time.LocalDate
 import java.time.LocalTime
 
 /**
@@ -42,6 +45,38 @@ data class Task(
 )
 
 val lastDayOfMonths = intArrayOf(31,28,31,30,31,30,31,31,30,31,30,31)
+
+
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun nextTaskIdForToday(list: List<TimeLineTask>): Int? {
+    // ➊ Bugünün tarihi
+    val today = LocalDate.now()
+
+    // ➋ Sadece bugünün görevleri
+    val todaysTasks = remember(list) {
+        list.filter {
+            it.year  == today.year &&
+                    it.month == today.monthValue &&
+                    it.day   == today.dayOfMonth
+        }
+    }
+
+    // ➌ Şimdiki zaman
+    val now     = LocalTime.now()
+    val nowInt  = now.hour * 60 + now.minute
+
+    // ➍ Önce ongoing görevi bul, yoksa gelecekteki ilk görevi
+    val nextId = remember(todaysTasks, nowInt) {
+        // ongoing: startTime ≤ now < endTime
+        val ongoing = todaysTasks.firstOrNull { nowInt in it.startTime until it.endTime }
+        ongoing?.taskID ?: todaysTasks.firstOrNull { it.startTime > nowInt }?.taskID
+    }
+
+    return nextId
+}
+
 
 @Composable
 fun DailyPlanningScreen(
@@ -140,12 +175,8 @@ fun TimeLineView(
     navController: NavHostController,
     onChange: () -> Unit,
 ) {
-    val now = LocalTime.now()
-    val nowInt = now.hour * 60 + now.minute
 
-    val nextTaskId = remember(list, nowInt) {
-        list.firstOrNull { it.startTime > nowInt }?.taskID
-    }
+    val nextTaskId = nextTaskIdForToday(list)
 
     Surface(
         modifier = Modifier
