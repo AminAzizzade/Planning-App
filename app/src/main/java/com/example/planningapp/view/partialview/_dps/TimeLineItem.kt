@@ -183,7 +183,9 @@ fun TimelineItem(
                     shape = RoundedCornerShape(cornerRadius)
                 )
                 .combinedClickable(
-                    onClick = { /* Navigasyon ok ikonu ile yapılacak */ },
+                    onClick = {
+                        navController.navigate("content/${event.taskID}")
+                    },
                     onLongClick = { showOptionsDialog = true }
                 ),
             contentAlignment = Alignment.Center
@@ -231,17 +233,29 @@ fun TimelineItem(
                         HoursTextView(overlayText)
                     }
 
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                        contentDescription = "Navigate to task content",
-                        modifier = Modifier
+                    // Summary Kısmı yoksa burası görünümü ortalamak için
+                    // çalışacak
+
+                    if(true)
+                    {
+                        Spacer(modifier = Modifier
                             .fillMaxHeight(0.35F)
                             .fillMaxWidth(0.6F)
-                            .clickable {
-                            navController.navigate("content/${event.taskID}")
-                        },
-                        tint = if (isNextTask) focusedColor else timeTextColor_beta
-                    )
+                            //.height(18.dp)
+                        )
+                    }
+
+//                    Icon(
+//                        imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+//                        contentDescription = "Navigate to task content",
+//                        modifier = Modifier
+//                            .fillMaxHeight(0.35F)
+//                            .fillMaxWidth(0.6F)
+//                            .clickable {
+//                            navController.navigate("content/${event.taskID}")
+//                        },
+//                        tint = if (isNextTask) focusedColor else timeTextColor_beta
+//                    )
 
                     if (isNextTask) {
                         Spacer(
