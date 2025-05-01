@@ -50,7 +50,7 @@ val lastDayOfMonths = intArrayOf(31,28,31,30,31,30,31,31,30,31,30,31)
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun nextTaskIdForToday(list: List<TimeLineTask>): Int? {
+fun nextTaskIdForToday(list: List<TimeLineTask>): Int {
     // ➊ Bugünün tarihi
     val today = LocalDate.now()
 
@@ -67,14 +67,16 @@ fun nextTaskIdForToday(list: List<TimeLineTask>): Int? {
     val now     = LocalTime.now()
     val nowInt  = now.hour * 60 + now.minute
 
-    // ➍ Önce ongoing görevi bul, yoksa gelecekteki ilk görevi
     val nextId = remember(todaysTasks, nowInt) {
-        // ongoing: startTime ≤ now < endTime
-        val ongoing = todaysTasks.firstOrNull { nowInt in it.startTime until it.endTime }
-        ongoing?.taskID ?: todaysTasks.firstOrNull { it.startTime > nowInt }?.taskID
+        val ongoing = todaysTasks.firstOrNull {
+            nowInt in it.startTime until it.endTime
+        }
+        ongoing?.taskID ?: todaysTasks.firstOrNull {
+            it.startTime > nowInt
+        }?.taskID
     }
 
-    return nextId
+    return nextId ?: 0
 }
 
 
@@ -188,10 +190,15 @@ fun TimeLineView(
                 .background(Color.White)
         ) {
             items(list) { event ->
+                val status = if (event.taskID == nextTaskId) 0
+                else if (event.taskID > nextTaskId) 1
+                else -1
+
                 TimelineItem(
                     viewModel = viewModel,
                     navController = navController,
                     event = event,
+                    status = status,
                     isNextTask = (event.taskID == nextTaskId),
                     onChange = { onChange() },
                 )
