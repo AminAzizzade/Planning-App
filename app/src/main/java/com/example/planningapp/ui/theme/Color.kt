@@ -10,5 +10,7 @@ val unfocusedColor = Color(0x886f6cf5)
 val backgroundColor = Color.White;
 val textColor = Color(0xFF403d71)
 val containerColor =   Color(0xFFf1f2ff)
+val passiveContainerColor = Color(0xFFf3f7ff)
 val timeTextColor = Color(0xFF2623a5)
 val timeTextColor_beta = Color(0xFF5c5c94)
+val timeTextColor_passive = Color(0xFFb6b5de)

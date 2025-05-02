@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -26,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.example.planningapp.data.entity.TaskStatus
 import com.example.planningapp.data.entity.TimeLineTask
 import com.example.planningapp.service.DateExtractorService
 import com.example.planningapp.view.partialview._dps.DaySelector
@@ -50,33 +52,31 @@ val lastDayOfMonths = intArrayOf(31,28,31,30,31,30,31,31,30,31,30,31)
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun nextTaskIdForToday(list: List<TimeLineTask>): Int {
-    // ➊ Bugünün tarihi
+fun nextTaskIndexForToday(list: List<TimeLineTask>): Int {
     val today = LocalDate.now()
 
-    // ➋ Sadece bugünün görevleri
-    val todaysTasks = remember(list) {
-        list.filter {
+    val now    = LocalTime.now()
+    val nowInt = now.hour * 60 + now.minute
+
+    val nextIndex = remember(list, today, nowInt) {
+        val ongoingIdx = list.indexOfFirst {
             it.year  == today.year &&
                     it.month == today.monthValue &&
-                    it.day   == today.dayOfMonth
+                    it.day   == today.dayOfMonth &&
+                    nowInt in it.startTime until it.endTime
+        }
+        if (ongoingIdx != -1) ongoingIdx
+        else {
+            list.indexOfFirst {
+                it.year  == today.year &&
+                        it.month == today.monthValue &&
+                        it.day   == today.dayOfMonth &&
+                        it.startTime > nowInt
+            }
         }
     }
 
-    // ➌ Şimdiki zaman
-    val now     = LocalTime.now()
-    val nowInt  = now.hour * 60 + now.minute
-
-    val nextId = remember(todaysTasks, nowInt) {
-        val ongoing = todaysTasks.firstOrNull {
-            nowInt in it.startTime until it.endTime
-        }
-        ongoing?.taskID ?: todaysTasks.firstOrNull {
-            it.startTime > nowInt
-        }?.taskID
-    }
-
-    return nextId ?: 0
+    return nextIndex.takeIf { it != -1 } ?: -1
 }
 
 
@@ -112,6 +112,9 @@ fun DailyPlanningScreen(
     var taskController by remember { mutableIntStateOf(0) }
     LaunchedEffect(taskController) {
         viewModel.resetViewModel(month, year)
+        viewModel.resetViewModel(month, year)
+        viewModel.resetViewModel(month, year)
+        viewModel.resetViewModel(month, year)
     }
 
 
@@ -144,6 +147,7 @@ fun DailyPlanningScreen(
         verticalArrangement = Arrangement.SpaceBetween
     )
     {
+
         Spacer(modifier = Modifier.height(16.dp))
 
         TimeLineView(viewModel, timelineTasks, navController, onChange =  { taskController++ })
@@ -169,7 +173,6 @@ fun DailyPlanningScreen(
     }
 }
 
-
 @Composable
 fun TimeLineView(
     viewModel: DailyPlanningViewModel,
@@ -177,8 +180,8 @@ fun TimeLineView(
     navController: NavHostController,
     onChange: () -> Unit,
 ) {
-
-    val nextTaskId = nextTaskIdForToday(list)
+    // artık index döndüren fonksiyonu kullanıyoruz
+    val nextIndex = nextTaskIndexForToday(list)
 
     Surface(
         modifier = Modifier
@@ -189,22 +192,27 @@ fun TimeLineView(
                 .fillMaxWidth()
                 .background(Color.White)
         ) {
-            items(list) { event ->
-                val status = if (event.taskID == nextTaskId) 0
-                else if (event.taskID > nextTaskId) 1
-                else -1
+            // itemsIndexed ile hem index’i hem de elemanı alacağız
+            itemsIndexed(list) { index, event ->
+                val status = when {
+                    index == nextIndex -> 0
+                    event.status == TaskStatus.IS_CANCELLED -> -2
+                    index < nextIndex  -> -1
+                    else -> 1
+                }
 
                 TimelineItem(
-                    viewModel = viewModel,
+                    viewModel     = viewModel,
                     navController = navController,
-                    event = event,
-                    status = status,
-                    isNextTask = (event.taskID == nextTaskId),
-                    onChange = { onChange() },
+                    event         = event,
+                    status        = status,
+                    isNextTask    = (index == nextIndex),
+                    onChange      = { onChange() },
                 )
             }
         }
     }
 }
+
 
 

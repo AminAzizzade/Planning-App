@@ -2,6 +2,7 @@ package com.example.planningapp.data.datasource
 
 import android.util.Log
 import com.example.planningapp.data.entity.Day
+import com.example.planningapp.data.entity.TaskStatus
 import com.example.planningapp.data.entity.TimeLineTask
 import com.example.planningapp.room.TimeLineTaskDAO
 import com.example.planningapp.view.datastructure.DailyTimeLineTasks
@@ -31,7 +32,8 @@ class DailyPlanningDataSource(private val dao: TimeLineTaskDAO) {
             year = year,
             taskName = taskName,
             startTime = startTime,
-            endTime = endTime
+            endTime = endTime,
+            status = TaskStatus.IS_UNSPECIFIED
         )
         dao.insertTask(newTimeLineTask)
     }
@@ -45,4 +47,8 @@ class DailyPlanningDataSource(private val dao: TimeLineTaskDAO) {
     }
 
     private fun convertDateInteger(day: Int, month: Int, year: Int): Int = year * 10000 + month * 100 + day
+
+    suspend fun updateTaskStatusById( id: Int, status: TaskStatus) {
+        dao.updateTaskStatusById(id, status)
+    }
 }

@@ -2,6 +2,7 @@ package com.example.planningapp.data.repository
 
 import com.example.planningapp.data.datasource.DailyPlanningDataSource
 import com.example.planningapp.data.entity.Day
+import com.example.planningapp.data.entity.TaskStatus
 import com.example.planningapp.data.entity.TimeLineTask
 
 class DailyPlanningRepository(private var dataSource: DailyPlanningDataSource)
@@ -17,4 +18,7 @@ class DailyPlanningRepository(private var dataSource: DailyPlanningDataSource)
 
     suspend fun updateTimeLineTaskById(id: Int, taskName: String, startTime: Int, endTime: Int)
     = dataSource.updateTimeLineTaskById(id, taskName, startTime, endTime)
+
+    suspend fun updateTaskStatusById(id: Int, status: TaskStatus) = dataSource.updateTaskStatusById(id, status)
+
 }

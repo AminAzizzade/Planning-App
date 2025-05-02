@@ -1,7 +1,18 @@
 package com.example.planningapp.view.partialview.general
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
@@ -10,7 +21,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.planningapp.data.entity.TaskStatus
 import com.example.planningapp.ui.theme.focusedColor
 import com.example.planningapp.ui.theme.focusedColorOpacity
 import com.example.planningapp.ui.theme.fontFamily
@@ -52,21 +65,31 @@ val textColor_beta = Color(0xFFb3b5de)
 @Composable
 fun ContainerTextView(
     text: String,
-
+    state: TaskStatus = TaskStatus.IS_UNSPECIFIED,
     modifier: Modifier = Modifier,
     textColor: Color = focusedColor
 )
 {
-    Text(
+    Column(
         modifier = modifier,
-        text = text,
-        //color = textColor,
-        color = textColor,
-        fontSize = 20.sp,
-        fontFamily = fontFamily,
-        fontWeight = FontWeight.W600,
-        textAlign = TextAlign.Center
-    )
+        //horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        // ◀︎ ➊ Üstteki daire
+
+
+
+        //Spacer(modifier = Modifier.height(spacing))
+
+        Text(
+            modifier = modifier,
+            text = text,
+            color = textColor,
+            fontSize = 20.sp,
+            fontFamily = fontFamily,
+            fontWeight = FontWeight.W600,
+            textAlign = TextAlign.Center
+        )
+    }
 }
 
 @Composable
