@@ -59,8 +59,11 @@ import com.example.planningapp.data.entity.TaskContent
 import com.example.planningapp.data.entity.TaskLabel
 import com.example.planningapp.ui.theme.containerColor
 import com.example.planningapp.ui.theme.mainColor
+import com.example.planningapp.view.partialview._tcs.EmptyDataView
+import com.example.planningapp.view.partialview._tcs.LabelDropdownMenu
 import com.example.planningapp.view.partialview._tcs.MissionInput
 import com.example.planningapp.view.partialview._tcs.MissionList
+import com.example.planningapp.view.partialview._tcs.NoteInputField
 import com.example.planningapp.view.partialview.general.textColor_beta
 import com.example.planningapp.view.viewmodel.ContentOfTaskViewModel
 
@@ -181,7 +184,6 @@ fun TaskContentScreen(
             ) {
                 MissionList(
                     missions = missions,
-                    viewModel = viewModel,
                     onDeleted = { mission ->
                         viewModel.deleteMission(mission)
                         changingData++
@@ -218,225 +220,6 @@ fun TaskContentScreen(
     }
 }
 
-@Composable
-fun EmptyDataView(onAddClick: () -> Unit) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White),
-        contentAlignment = Alignment.Center
-    ) {
-        IconButton(onClick = onAddClick) {
-            Icon(
-                imageVector = Icons.Filled.Add,
-                contentDescription = "Add Data",
-                modifier = Modifier.size(100.dp),
-                tint = mainColor
-            )
-        }
-    }
-}
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun NoteInputField(
-    note: String,
-    onNoteChange: (String) -> Unit
-) {
-    var showEditor by remember { mutableStateOf(false) }
-    val scrollState = rememberScrollState()
 
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 32.dp)
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .verticalScroll(scrollState)
-        ) {
-            OutlinedTextField(
-                value = note,
-                onValueChange = {},
-                readOnly = true,
-                modifier = Modifier.fillMaxSize(),
-                label = { Text("Note") },
-                trailingIcon = {
-                    Icon(
-                        imageVector = Icons.Default.Edit,
-                        contentDescription = "Edit note",
-                        tint = mainColor
-                    )
-                },
-                shape = RoundedCornerShape(16.dp),
-                colors = outlinedTextFieldColors(
-                    disabledTextColor = textColor_beta,
-                    unfocusedBorderColor = textColor_beta,
-                    unfocusedLabelColor = textColor_beta
-                ),
-                singleLine = true
-            )
-        }
 
-        Box(
-            modifier = Modifier
-                .matchParentSize()
-                .pointerInput(Unit) {
-                    detectTapGestures { showEditor = true }
-                }
-        )
-    }
-
-    if (showEditor) {
-        FullScreenNoteEditor(
-            initialText = note,
-            onDismiss = { showEditor = false },
-            onSave = {
-                onNoteChange(it)
-                showEditor = false
-            }
-        )
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun FullScreenNoteEditor(
-    initialText: String,
-    onDismiss: () -> Unit,
-    onSave: (String) -> Unit
-) {
-    var tempText by remember { mutableStateOf(initialText) }
-
-    Dialog(onDismissRequest = onDismiss) {
-        Surface(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            shape = RoundedCornerShape(12.dp),
-            color = Color.White,
-            tonalElevation = 4.dp
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp)
-            ) {
-                Text("Not Düzenle", style = MaterialTheme.typography.titleMedium)
-                Spacer(Modifier.height(12.dp))
-                OutlinedTextField(
-                    value = tempText,
-                    onValueChange = { if (it.length <= 250) tempText = it },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f),
-                    placeholder = { Text("Notunuzu buraya yazın...") },
-                    maxLines = 20,
-                    shape = RoundedCornerShape(8.dp),
-                    colors = outlinedTextFieldColors(
-                        focusedBorderColor = mainColor,
-                        cursorColor = mainColor
-                    )
-                )
-                Spacer(Modifier.height(12.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End
-                ) {
-                    TextButton(onClick = onDismiss) { Text("İptal") }
-                    Spacer(Modifier.width(8.dp))
-                    TextButton(onClick = { onSave(tempText) }) { Text("Kaydet") }
-                }
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun LabelDropdownMenu(
-    labelState: TaskLabel,
-    onLabelSelected: (TaskLabel) -> Unit
-) {
-    var expanded by remember { mutableStateOf(false) }
-    val options = TaskLabel.entries
-    val shape = RoundedCornerShape(16.dp)
-
-    fun TaskLabel.icon() = when (this) {
-        TaskLabel.WORK -> Icons.Default.AccountBox
-        TaskLabel.SCHOOL -> Icons.Default.Email
-        TaskLabel.HOME -> Icons.Default.Home
-    }
-
-    ExposedDropdownMenuBox(
-        modifier = Modifier
-            .padding(horizontal = 32.dp)
-            .fillMaxWidth(0.8f),
-        expanded = expanded,
-        onExpandedChange = { expanded = !expanded }
-    ) {
-        OutlinedTextField(
-            readOnly = true,
-            value = labelState.name,
-            onValueChange = {},
-            modifier = Modifier.menuAnchor().fillMaxWidth(),
-            shape = shape,
-            label = { Text("Label") },
-            leadingIcon = {
-                Icon(
-                    imageVector = labelState.icon(),
-                    contentDescription = null,
-                    tint = mainColor
-                )
-            },
-            trailingIcon = {
-                ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
-            },
-            colors = outlinedTextFieldColors(
-                focusedBorderColor = mainColor,
-                unfocusedBorderColor = textColor_beta,
-                focusedLabelColor = mainColor,
-                unfocusedLabelColor = textColor_beta
-            )
-        )
-
-        ExposedDropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false },
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.surface, shape)
-        ) {
-            options.forEach { option ->
-                DropdownMenuItem(
-                    text = {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                imageVector = option.icon(),
-                                contentDescription = null,
-                                tint = mainColor,
-                                modifier = Modifier.size(20.dp).fillMaxSize()
-                            )
-                            Spacer(Modifier.width(8.dp))
-                            Text(option.name)
-                        }
-                    },
-                    onClick = {
-                        onLabelSelected(option)
-                        expanded = false
-                    },
-                    colors = MenuItemColors(
-                        textColor = MaterialTheme.colorScheme.onSurface,
-                        leadingIconColor = mainColor,
-                        trailingIconColor = if (option == labelState) mainColor.copy(alpha = 0.1f) else Color.Transparent,
-                        disabledTextColor = MaterialTheme.colorScheme.onSurface,
-                        disabledLeadingIconColor = mainColor,
-                        disabledTrailingIconColor = mainColor
-                    ),
-                    modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp)
-                )
-            }
-        }
-    }
-}

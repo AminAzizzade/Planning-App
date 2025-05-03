@@ -36,7 +36,6 @@ import com.example.planningapp.view.viewmodel.ContentOfTaskViewModel
 @Composable
 fun MissionList(
     missions: List<CheckBoxMission>,
-    viewModel: ContentOfTaskViewModel,
     onDeleted: (CheckBoxMission) -> Unit,
     onChecked: (Boolean, Int) -> Unit
 ) {
