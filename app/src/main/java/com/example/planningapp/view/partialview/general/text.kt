@@ -46,27 +46,25 @@ fun HoursTextView(time: String)
     )
 }
 
-//val testColor_beta = Color(0xFFb9b8e1)
 val textColor_beta = Color(0xFFb3b5de)
 
 @Composable
 fun ContainerTextView(
     text: String,
-
     modifier: Modifier = Modifier,
     textColor: Color = focusedColor
 )
 {
-    Text(
-        modifier = modifier,
-        text = text,
-        //color = textColor,
-        color = textColor,
-        fontSize = 20.sp,
-        fontFamily = fontFamily,
-        fontWeight = FontWeight.W600,
-        textAlign = TextAlign.Center
-    )
+        Text(
+            modifier = modifier,
+            text = text,
+            color = textColor,
+            fontSize = 20.sp,
+            fontFamily = fontFamily,
+            fontWeight = FontWeight.W600,
+            textAlign = TextAlign.Center
+        )
+
 }
 
 @Composable
@@ -81,8 +79,8 @@ fun ContainerTextView_Checked(
         color = textColor,
         fontSize = 20.sp,
         fontFamily = fontFamily,
-        fontWeight = FontWeight.W600,
-        //fontStyle = Italic,                    // Italic
+        fontWeight = FontWeight.W800,
+        fontStyle = Italic,                    // Italic
         textDecoration = TextDecoration.LineThrough,      // Üstü çizili
         textAlign = TextAlign.Center
     )

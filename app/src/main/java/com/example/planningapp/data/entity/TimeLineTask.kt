@@ -20,5 +20,8 @@ data class TimeLineTask (
 
     @ColumnInfo(name = "StartTime") @NotNull var startTime: Int,
 
-    @ColumnInfo(name = "EndTime")   @NotNull var endTime: Int
+    @ColumnInfo(name = "EndTime")   @NotNull var endTime: Int,
+
+    @ColumnInfo(name = "Status", defaultValue = "IS_UNSPECIFIED") @NotNull var status: TaskStatus
+
 )

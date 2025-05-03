@@ -1,5 +1,6 @@
 package com.example.planningapp.service
 
+import com.example.planningapp.data.entity.TaskStatus
 import com.example.planningapp.data.entity.TimeLineTask
 import com.example.planningapp.view.Task
 
@@ -14,7 +15,8 @@ object TaskConverterService {
             year = year,
             taskName = task.taskName,
             startTime = timeService.convert(task.startTime), // "HH:MM" → Integer (dakika cinsinden)
-            endTime = timeService.convert(task.endTime) // "HH:MM" → Integer (dakika cinsinden)
+            endTime = timeService.convert(task.endTime), // "HH:MM" → Integer (dakika cinsinden)
+            status = TaskStatus.IS_UNSPECIFIED
         )
     }
 

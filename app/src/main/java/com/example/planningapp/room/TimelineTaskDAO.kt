@@ -3,6 +3,7 @@ package com.example.planningapp.room
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import com.example.planningapp.data.entity.TaskStatus
 import com.example.planningapp.data.entity.TimeLineTask
 
 @Dao
@@ -29,4 +30,8 @@ interface TimeLineTaskDAO
 
     @Query("UPDATE TimeLineTask SET Name = :taskName, StartTime = :startTime, EndTime = :endTime WHERE TaskID = :id")
     suspend fun updateTimeLineTasksByID(id: Int, taskName: String, startTime: Int, endTime: Int)
+
+    @Query("UPDATE TimeLineTask SET Status = :status WHERE TaskID = :id")
+    suspend fun updateTaskStatusById(id: Int, status: TaskStatus)
+
 }

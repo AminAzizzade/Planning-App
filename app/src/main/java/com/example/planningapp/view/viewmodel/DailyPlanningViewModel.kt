@@ -3,6 +3,7 @@ package com.example.planningapp.view.viewmodel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.planningapp.data.entity.Day
+import com.example.planningapp.data.entity.TaskStatus
 import com.example.planningapp.data.repository.DailyPlanningRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -42,10 +43,17 @@ class DailyPlanningViewModel @Inject constructor(private var repository: DailyPl
         }
     }
 
+
     fun updateTimeLineTask(id: Int, taskName: String, startTime: Int, endTime: Int,) {
         CoroutineScope(Dispatchers.Main).launch {
             repository.updateTimeLineTaskById(id, taskName, startTime, endTime)
         }
     }
 
+
+    fun updateTaskStatus(id: Int, status: TaskStatus) {
+        CoroutineScope(Dispatchers.Main).launch {
+            repository.updateTaskStatusById(id, status)
+        }
+    }
 }
