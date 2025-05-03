@@ -78,6 +78,7 @@ fun TaskContentScreen(
     val contentState = allContents[taskId]
 
     if (contentState == null) {
+        EmptyDataView(onAddClick = {
             val newContent = TaskContent(
                 taskId = taskId,
                 contentId = 0,
@@ -86,7 +87,7 @@ fun TaskContentScreen(
             )
             viewModel.insertTaskContent(newContent)
             viewModel.resetViewModel()
-
+        })
         return
     }
 
@@ -222,6 +223,27 @@ fun TaskContentScreen(
             ) {
                 Text("Save")
             }
+        }
+    }
+}
+
+@Composable
+fun EmptyDataView(onAddClick: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White),
+        contentAlignment = Alignment.Center
+    ) {
+        IconButton(
+            onClick = onAddClick,
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Add,
+                contentDescription = "Add Data",
+                modifier = Modifier.size(100.dp),
+                tint = mainColor
+            )
         }
     }
 }

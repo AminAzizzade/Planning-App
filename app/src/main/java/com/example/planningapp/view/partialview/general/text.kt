@@ -105,7 +105,7 @@ fun ContainerTextView_Checked(
         fontSize = 20.sp,
         fontFamily = fontFamily,
         fontWeight = FontWeight.W600,
-        //fontStyle = Italic,                    // Italic
+        fontStyle = Italic,                    // Italic
         textDecoration = TextDecoration.LineThrough,      // Üstü çizili
         textAlign = TextAlign.Center
     )

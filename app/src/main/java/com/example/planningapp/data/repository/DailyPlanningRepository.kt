@@ -3,7 +3,6 @@ package com.example.planningapp.data.repository
 import com.example.planningapp.data.datasource.DailyPlanningDataSource
 import com.example.planningapp.data.entity.Day
 import com.example.planningapp.data.entity.TaskStatus
-import com.example.planningapp.data.entity.TimeLineTask
 
 class DailyPlanningRepository(private var dataSource: DailyPlanningDataSource)
 {

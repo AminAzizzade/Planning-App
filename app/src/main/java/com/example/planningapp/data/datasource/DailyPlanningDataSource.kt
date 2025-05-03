@@ -1,6 +1,5 @@
 package com.example.planningapp.data.datasource
 
-import android.util.Log
 import com.example.planningapp.data.entity.Day
 import com.example.planningapp.data.entity.TaskStatus
 import com.example.planningapp.data.entity.TimeLineTask

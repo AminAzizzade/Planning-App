@@ -1,6 +1,7 @@
 package com.example.planningapp.data.repository
 
 import com.example.planningapp.data.datasource.ContentOfTaskDataSource
+import com.example.planningapp.data.entity.CheckBoxMission
 import com.example.planningapp.data.entity.TaskContent
 
 class ContentOfTaskRepository (private val dataSource: ContentOfTaskDataSource)
