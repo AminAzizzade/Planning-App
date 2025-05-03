@@ -102,17 +102,18 @@ fun TaskContentScreen(
 
     LaunchedEffect(missionsFromDb) {
         missions.clear()
-        missions.addAll(missionsFromDb)
+        // Öncelikle işaretlenmemiş görevleri, sonra işaretli görevleri ekleyerek sıralama
+        val unchecked = missionsFromDb.filter { !it.check }
+        val checked = missionsFromDb.filter { it.check }
+        missions.addAll(unchecked + checked)
     }
 
     // Clean Code
     var changingData by remember { mutableIntStateOf(0) }
 
-    LaunchedEffect(changingData)
-    {
+    LaunchedEffect(changingData) {
         viewModel.resetViewModel()
         viewModel.resetViewModel()
-
     }
 
     var updated by remember { mutableStateOf<TaskContent?>(null) }
@@ -133,7 +134,6 @@ fun TaskContentScreen(
     ) {
         Column(
             modifier = Modifier
-                //.padding(top = 50.dp)
                 .background(Color.White),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween
@@ -173,7 +173,6 @@ fun TaskContentScreen(
             /**
              * Mission listesini gösteren composable
              */
-
             Surface(
                 modifier = Modifier
                     .background(Color.White)
@@ -188,17 +187,12 @@ fun TaskContentScreen(
                         changingData++
                     },
                     onChecked = { newValue, index ->
-                        if (newValue) {
-                            viewModel.checkMission(missions[index].missionId)
-                        } else {
-                            viewModel.uncheckMission(missions[index].missionId)
-                        }
+                        if (newValue) viewModel.checkMission(missions[index].missionId)
+                        else viewModel.uncheckMission(missions[index].missionId)
                         changingData++
                     }
                 )
-
             }
-
 
             /**
              * Save butonu
@@ -206,8 +200,7 @@ fun TaskContentScreen(
             Button(
                 modifier = Modifier
                     .width(150.dp)
-                    .background(containerColor)
-                ,
+                    .background(containerColor),
                 colors = ButtonDefaults.buttonColors(mainColor),
                 onClick = {
                     updated = TaskContent(
@@ -216,8 +209,6 @@ fun TaskContentScreen(
                         missionNote = note,
                         label = labelState
                     )
-
-                    // Clean code
                     changingData++
                 }
             ) {
@@ -235,9 +226,7 @@ fun EmptyDataView(onAddClick: () -> Unit) {
             .background(Color.White),
         contentAlignment = Alignment.Center
     ) {
-        IconButton(
-            onClick = onAddClick,
-        ) {
+        IconButton(onClick = onAddClick) {
             Icon(
                 imageVector = Icons.Filled.Add,
                 contentDescription = "Add Data",
@@ -259,19 +248,17 @@ fun NoteInputField(
 
     Box(
         modifier = Modifier
-            //.height(100.dp)
             .fillMaxWidth()
             .padding(horizontal = 32.dp)
     ) {
-        // ➊ Sabit yükseklikli, iç scroll’lu alan
         Box(
             modifier = Modifier
-                .fillMaxWidth()         // önizlemenin yüksekliği
-                .verticalScroll(scrollState)  // uzun metni içe kaydır
+                .fillMaxWidth()
+                .verticalScroll(scrollState)
         ) {
             OutlinedTextField(
                 value = note,
-                onValueChange = {},       // readOnly
+                onValueChange = {},
                 readOnly = true,
                 modifier = Modifier.fillMaxSize(),
                 label = { Text("Note") },
@@ -284,11 +271,11 @@ fun NoteInputField(
                 },
                 shape = RoundedCornerShape(16.dp),
                 colors = outlinedTextFieldColors(
-                    disabledTextColor      = textColor_beta,
-                    unfocusedBorderColor   = textColor_beta,
-                    unfocusedLabelColor    = textColor_beta
+                    disabledTextColor = textColor_beta,
+                    unfocusedBorderColor = textColor_beta,
+                    unfocusedLabelColor = textColor_beta
                 ),
-                singleLine = true,
+                singleLine = true
             )
         }
 
@@ -304,8 +291,8 @@ fun NoteInputField(
     if (showEditor) {
         FullScreenNoteEditor(
             initialText = note,
-            onDismiss   = { showEditor = false },
-            onSave      = {
+            onDismiss = { showEditor = false },
+            onSave = {
                 onNoteChange(it)
                 showEditor = false
             }
@@ -340,9 +327,7 @@ fun FullScreenNoteEditor(
                 Spacer(Modifier.height(12.dp))
                 OutlinedTextField(
                     value = tempText,
-                    onValueChange = {
-                        if (it.length <= 250) tempText = it
-                    },
+                    onValueChange = { if (it.length <= 250) tempText = it },
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f),
@@ -351,7 +336,7 @@ fun FullScreenNoteEditor(
                     shape = RoundedCornerShape(8.dp),
                     colors = outlinedTextFieldColors(
                         focusedBorderColor = mainColor,
-                        cursorColor        = mainColor
+                        cursorColor = mainColor
                     )
                 )
                 Spacer(Modifier.height(12.dp))
@@ -359,19 +344,14 @@ fun FullScreenNoteEditor(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.End
                 ) {
-                    TextButton(onClick = onDismiss) {
-                        Text("İptal")
-                    }
+                    TextButton(onClick = onDismiss) { Text("İptal") }
                     Spacer(Modifier.width(8.dp))
-                    TextButton(onClick = { onSave(tempText) }) {
-                        Text("Kaydet")
-                    }
+                    TextButton(onClick = { onSave(tempText) }) { Text("Kaydet") }
                 }
             }
         }
     }
 }
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -384,16 +364,15 @@ fun LabelDropdownMenu(
     val shape = RoundedCornerShape(16.dp)
 
     fun TaskLabel.icon() = when (this) {
-        TaskLabel.WORK   -> Icons.Default.AccountBox
+        TaskLabel.WORK -> Icons.Default.AccountBox
         TaskLabel.SCHOOL -> Icons.Default.Email
-        TaskLabel.HOME   -> Icons.Default.Home
+        TaskLabel.HOME -> Icons.Default.Home
     }
-
 
     ExposedDropdownMenuBox(
         modifier = Modifier
             .padding(horizontal = 32.dp)
-            .fillMaxWidth(0.8F),
+            .fillMaxWidth(0.8f),
         expanded = expanded,
         onExpandedChange = { expanded = !expanded }
     ) {
@@ -401,10 +380,7 @@ fun LabelDropdownMenu(
             readOnly = true,
             value = labelState.name,
             onValueChange = {},
-            modifier = Modifier
-                .menuAnchor()
-                .fillMaxWidth()
-            ,
+            modifier = Modifier.menuAnchor().fillMaxWidth(),
             shape = shape,
             label = { Text("Label") },
             leadingIcon = {
@@ -418,10 +394,10 @@ fun LabelDropdownMenu(
                 ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
             },
             colors = outlinedTextFieldColors(
-                focusedBorderColor   = mainColor,
+                focusedBorderColor = mainColor,
                 unfocusedBorderColor = textColor_beta,
-                focusedLabelColor    = mainColor,
-                unfocusedLabelColor  = textColor_beta
+                focusedLabelColor = mainColor,
+                unfocusedLabelColor = textColor_beta
             )
         )
 
@@ -440,9 +416,7 @@ fun LabelDropdownMenu(
                                 imageVector = option.icon(),
                                 contentDescription = null,
                                 tint = mainColor,
-                                modifier = Modifier
-                                    .size(20.dp)
-                                    .fillMaxSize()
+                                modifier = Modifier.size(20.dp).fillMaxSize()
                             )
                             Spacer(Modifier.width(8.dp))
                             Text(option.name)
@@ -455,21 +429,14 @@ fun LabelDropdownMenu(
                     colors = MenuItemColors(
                         textColor = MaterialTheme.colorScheme.onSurface,
                         leadingIconColor = mainColor,
-                        trailingIconColor =
-                            if (option == labelState) mainColor.copy(alpha = 0.1f)
-                            else  Color.Transparent,
+                        trailingIconColor = if (option == labelState) mainColor.copy(alpha = 0.1f) else Color.Transparent,
                         disabledTextColor = MaterialTheme.colorScheme.onSurface,
                         disabledLeadingIconColor = mainColor,
-                        disabledTrailingIconColor = mainColor,
+                        disabledTrailingIconColor = mainColor
                     ),
-                    modifier = Modifier
-                        .padding(vertical = 4.dp, horizontal = 8.dp)
+                    modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp)
                 )
             }
         }
     }
 }
-
-
-
-
